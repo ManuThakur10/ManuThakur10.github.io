@@ -1,16 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Portfolio</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manu Thakur — CS 180</title>
+
+    <link rel="stylesheet" href="./style.css">
 </head>
+
 <body>
-    <h1>Welcome to My CS180 Portfolio!</h1>
-    <a href="./1/index.html">Project 1</a>
+
+    <nav class="nav">
+        <a class="nav-logo" href="./">MT</a>
+
+        <div class="nav-links">
+            <a href="#projects">Projects</a>
+            <a href="https://cal-cs180.github.io/fa26/">CS 180</a>
+        </div>
+    </nav>
+
+
+    <main>
+
+        <section class="hero">
+            <p class="eyebrow">UC Berkeley · Fall 2026</p>
+
+            <h1>
+                Computer Vision<br>
+                <span class="muted">& Computational Photography</span>
+            </h1>
+
+            <p class="hero-description">
+                A collection of experiments in computational photography,
+                image processing, geometry, and visual computing for CS 180.
+            </p>
+
+            <div class="hero-meta">
+                <span>Manu Thakur</span>
+                <span>CS 180 / 280A</span>
+            </div>
+        </section>
+
+
+        <section id="projects" class="projects">
+
+            <div class="section-header">
+                <p class="eyebrow">Selected work</p>
+                <h2>Projects</h2>
+            </div>
+
+
+            <a class="project-card" href="./0/index.html">
+                <div class="project-number">00</div>
+
+                <div class="project-info">
+                    <h3>Becoming Friends<br>with Your Camera</h3>
+
+                    <p>
+                        Perspective, focal length, compression,
+                        and the dolly zoom.
+                    </p>
+                </div>
+
+                <div class="project-arrow">↗</div>
+            </a>
+
+
+            <a class="project-card disabled" href="./1/index.html">
+                <div class="project-number">01</div>
+
+                <div class="project-info">
+                    <h3>Images of the<br>Russian Empire</h3>
+
+                    <p>
+                        Colorizing the Prokudin-Gorskii
+                        photo collection.
+                    </p>
+                </div>
+
+                <div class="project-arrow">↗</div>
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <span>Manu Thakur</span>
+        <span>Berkeley CS 180 · 2026</span>
+    </footer>
+
 </body>
 </html>
