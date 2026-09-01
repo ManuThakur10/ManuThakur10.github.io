@@ -357,6 +357,14 @@ main {
     color: var(--muted);
 }
 
+.project-section-text p {
+    margin: 0;
+}
+
+.project-section-text p + p {
+    margin-top: 1em;
+}
+
 
 /* ------------------------------
    IMAGE LAYOUTS
@@ -373,6 +381,11 @@ main {
 .image-grid figure,
 .full-image {
     margin: 0;
+}
+
+.image-grid figure {
+    display: flex;
+    flex-direction: column;
 }
 
 .image-grid img,
@@ -392,6 +405,16 @@ figcaption {
 
 .full-image {
     margin-top: 35px;
+}
+
+.portrait-media {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.portrait-media picture {
+    display: block;
 }
 
 
