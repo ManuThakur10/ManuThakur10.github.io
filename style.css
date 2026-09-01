@@ -12,6 +12,9 @@
 
     --max-width: 1280px;
 
+    --ease-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
     --font: -apple-system, BlinkMacSystemFont,
             "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -203,6 +206,8 @@ main {
 }
 
 .project-card {
+    --card-shift: 0px;
+
     border-top: 1px solid var(--line);
 
     padding: 42px 0;
@@ -216,17 +221,20 @@ main {
 
     align-items: start;
 
+    transform: translate3d(var(--card-shift), 0, 0);
+
     transition:
-        padding 0.25s ease,
-        opacity 0.25s ease;
+        transform 0.55s var(--ease-cinematic),
+        opacity 0.4s ease,
+        border-color 0.4s ease;
 }
 
 .project-card:last-child {
     border-bottom: 1px solid var(--line);
 }
 
-.project-card:hover {
-    padding-left: 18px;
+.project-card:is(:hover, :focus-visible) {
+    --card-shift: 12px;
 }
 
 .project-number {
@@ -260,11 +268,11 @@ main {
 .project-arrow {
     font-size: 30px;
 
-    transition: transform 0.25s ease;
+    transition: transform 0.55s var(--ease-cinematic);
 }
 
-.project-card:hover .project-arrow {
-    transform: translate(5px, -5px);
+.project-card:is(:hover, :focus-visible) .project-arrow {
+    transform: translate3d(5px, -5px, 0);
 }
 
 
@@ -388,6 +396,99 @@ figcaption {
 
 
 /* ------------------------------
+   MOTION
+-------------------------------- */
+
+/* Hero motion runs only after the shared script confirms motion is welcome. */
+.motion-enabled .hero > *,
+.motion-enabled .project-hero > * {
+    animation: hero-entrance 0.95s var(--ease-cinematic) both;
+}
+
+.motion-enabled .hero > :nth-child(1),
+.motion-enabled .project-hero > :nth-child(1) {
+    animation-delay: 0.06s;
+}
+
+.motion-enabled .hero > :nth-child(2),
+.motion-enabled .project-hero > :nth-child(2) {
+    animation-delay: 0.14s;
+}
+
+.motion-enabled .hero > :nth-child(3),
+.motion-enabled .project-hero > :nth-child(3) {
+    animation-delay: 0.26s;
+}
+
+.motion-enabled .hero > :nth-child(4) {
+    animation-delay: 0.36s;
+}
+
+@keyframes hero-entrance {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 22px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.motion-enabled .reveal {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+
+    transition:
+        opacity 0.85s var(--ease-smooth),
+        transform 0.95s var(--ease-cinematic),
+        clip-path 1.05s var(--ease-cinematic);
+    transition-delay: var(--reveal-delay, 0ms);
+}
+
+.motion-enabled .reveal.is-visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+}
+
+/* Preserve the horizontal card hover while its vertical reveal completes. */
+.motion-enabled .project-card.reveal {
+    transform: translate3d(var(--card-shift), 28px, 0);
+}
+
+.motion-enabled .project-card.reveal.is-visible {
+    transform: translate3d(var(--card-shift), 0, 0);
+}
+
+.motion-enabled .reveal-image {
+    overflow: hidden;
+    clip-path: inset(0 0 9% 0);
+}
+
+.motion-enabled .reveal-image.is-visible {
+    clip-path: inset(0 0 0 0);
+}
+
+.motion-enabled .reveal-image img {
+    transform: scale(1.035);
+    translate: 0 var(--parallax-y, 0px);
+
+    transition: transform 1.25s var(--ease-cinematic);
+    transition-delay: var(--reveal-delay, 0ms);
+}
+
+.motion-enabled .reveal-image.is-visible img {
+    transform: scale(var(--image-scale, 1));
+}
+
+/* Add data-parallax to a .full-image figure to opt in. */
+.motion-enabled .full-image[data-parallax] {
+    --image-scale: 1.025;
+}
+
+
+/* ------------------------------
    FOOTER
 -------------------------------- */
 
@@ -448,5 +549,48 @@ footer {
 
     .image-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+
+/* ------------------------------
+   REDUCED MOTION
+-------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0ms !important;
+    }
+
+    .project-card:is(:hover, :focus-visible) {
+        --card-shift: 0px;
+    }
+
+    .project-card:is(:hover, :focus-visible) .project-arrow {
+        transform: none;
+    }
+
+    .motion-enabled .reveal,
+    .motion-enabled .project-card.reveal,
+    .motion-enabled .project-card.reveal.is-visible {
+        opacity: 1;
+        transform: none;
+        clip-path: none;
+    }
+
+    .motion-enabled .reveal-image img,
+    .motion-enabled .reveal-image.is-visible img {
+        transform: none;
+        translate: none;
     }
 }
