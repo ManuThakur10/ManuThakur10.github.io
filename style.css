@@ -391,8 +391,16 @@ main {
 .image-grid img,
 .full-image img {
     width: 100%;
+    height: auto;
+    flex: none;
 
     background: var(--surface);
+}
+
+.portrait-grid {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 figcaption {
@@ -408,7 +416,7 @@ figcaption {
 }
 
 .portrait-media {
-    max-width: 720px;
+    max-width: 560px;
     margin-left: auto;
     margin-right: auto;
 }
