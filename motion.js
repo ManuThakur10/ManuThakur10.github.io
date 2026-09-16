@@ -9,13 +9,20 @@
 
     const revealElements = document.querySelectorAll(
         ".section-header, .project-card, .project-section-header, " +
-        ".project-section-text, .image-grid figure, .full-image"
+        ".project-section-text, .image-grid figure, .full-image, " +
+        ".project-facts, .section-lede, .process-flow, .equation-panel, " +
+        ".pyramid-flow, .comparison-panel, .comparison-grid figure, " +
+        ".result-card, .case-study, .case-study-media figure, " +
+        ".debug-note, .insight"
     );
 
     revealElements.forEach((element) => {
         element.classList.add("reveal");
 
-        if (element.matches(".image-grid figure, .full-image")) {
+        if (element.matches(
+            ".image-grid figure, .full-image, .comparison-grid figure, " +
+            ".case-study-media figure"
+        )) {
             element.classList.add("reveal-image");
         }
     });
@@ -27,6 +34,12 @@
     document.querySelectorAll(".image-grid").forEach((grid) => {
         grid.querySelectorAll("figure").forEach((figure, index) => {
             figure.style.setProperty("--reveal-delay", `${index * 90}ms`);
+        });
+    });
+
+    document.querySelectorAll(".result-grid").forEach((grid) => {
+        grid.querySelectorAll(".result-card").forEach((card, index) => {
+            card.style.setProperty("--reveal-delay", `${(index % 3) * 70}ms`);
         });
     });
 

@@ -1,1 +1,14 @@
 /AGENTS.md
+
+# macOS and Python-generated files
+.DS_Store
+__pycache__/
+*.py[cod]
+
+# Keep coursework code, source plates, and course materials out of the public
+# GitHub Pages repository. Web-ready Project 1 files live in /1 instead.
+/Project1/
+/Discussions/
+
+# Local source media already exported into /0/media.
+/0/media/project0 images/

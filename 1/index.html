@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Project 1 — Images of the Russian Empire</title>
+    <meta
+        name="description"
+        content="CS 180 Project 1: reconstructing Prokudin-Gorskii color photographs with single-scale and pyramid alignment."
+    >
+
+    <link rel="stylesheet" href="../style.css">
+    <script src="../motion.js" defer></script>
+</head>
+
+<body>
+
+    <nav class="nav">
+        <a class="nav-logo" href="../index.html" aria-label="Back to portfolio home">MT</a>
+
+        <div class="nav-links">
+            <a href="../index.html#projects">All projects</a>
+            <a href="https://cal-cs180.github.io/fa26/">CS 180</a>
+        </div>
+    </nav>
+
+
+    <main>
+
+        <section class="project-hero">
+            <p class="eyebrow">Project 01 · Fall 2026</p>
+
+            <h1 class="project-title">Images of the<br>Russian Empire</h1>
+
+            <p class="project-summary">
+                Reconstructing Sergei Prokudin-Gorskii’s color photographs from
+                three filtered grayscale exposures using exhaustive search and
+                coarse-to-fine alignment.
+            </p>
+
+            <div class="project-facts" aria-label="Project summary">
+                <div class="project-fact">
+                    <span class="project-fact-label">Dataset</span>
+                    <span class="project-fact-value">14 provided + 3 selected plates</span>
+                </div>
+                <div class="project-fact">
+                    <span class="project-fact-label">Metric</span>
+                    <span class="project-fact-value">L2 · NCC / Sobel fallbacks</span>
+                </div>
+                <div class="project-fact">
+                    <span class="project-fact-label">Default reference</span>
+                    <span class="project-fact-value">Blue · green for difficult cases</span>
+                </div>
+                <div class="project-fact">
+                    <span class="project-fact-label">Motion model</span>
+                    <span class="project-fact-value">Integer x/y translation</span>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="overview" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">01</span>
+                <h2>From Glass Plate<br>to Color Image</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    Prokudin-Gorskii recorded each scene through blue, green, and red
+                    filters. The digitized glass plate stores those grayscale exposures
+                    vertically in B–G–R order. I split the plate into equal thirds,
+                    align the green and red images to blue by default, and stack the
+                    result as <code>[R, G, B]</code>. A few documented failure cases
+                    instead keep green fixed.
+                </p>
+                <p>
+                    The reconstruction assumes that an integer translation is enough:
+                    no rotation, scale change, warping, or color correction is applied.
+                </p>
+            </div>
+
+            <div class="process-flow" aria-label="Glass plate reconstruction pipeline">
+                <figure class="process-step plate-step">
+                    <img
+                        src="./media/pipeline/cathedral-plate.jpg"
+                        alt="The Cathedral glass plate with three vertically stacked exposures"
+                        width="381"
+                        height="1000"
+                    >
+                    <figcaption class="process-step-label">01 · stacked B–G–R plate</figcaption>
+                </figure>
+
+                <div class="process-arrow" aria-hidden="true">→</div>
+
+                <figure class="process-step">
+                    <div class="channel-step-images">
+                        <img src="./media/pipeline/cathedral-blue.jpg" alt="Blue-filter exposure" width="344" height="300">
+                        <img src="./media/pipeline/cathedral-green.jpg" alt="Green-filter exposure" width="344" height="300">
+                        <img src="./media/pipeline/cathedral-red.jpg" alt="Red-filter exposure" width="344" height="300">
+                    </div>
+                    <figcaption class="process-step-label">02 · slice B, G, and R</figcaption>
+                </figure>
+
+                <div class="process-arrow" aria-hidden="true">→</div>
+
+                <figure class="process-step">
+                    <div class="alignment-step-card">
+                        <strong>Align</strong>
+                        <span>B fixed<br>G → B<br>R → B</span>
+                    </div>
+                    <figcaption class="process-step-label">03 · estimate translations</figcaption>
+                </figure>
+
+                <div class="process-arrow" aria-hidden="true">→</div>
+
+                <figure class="process-step result-step">
+                    <img
+                        src="./media/results/cathedral.jpg"
+                        alt="Aligned color reconstruction of Cathedral"
+                        width="332"
+                        height="291"
+                    >
+                    <figcaption class="process-step-label">04 · stack aligned RGB</figcaption>
+                </figure>
+            </div>
+        </section>
+
+
+        <section id="single-scale" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">02</span>
+                <h2>Single-Scale<br>Alignment</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    For each low-resolution JPEG, I keep blue fixed and exhaustively
+                    test every green and red translation from −15 through +15 pixels
+                    in both axes. Each candidate is created with <code>np.roll</code> and
+                    scored against the same interior region of the reference image.
+                </p>
+            </div>
+
+            <div class="equation-panel">
+                <div class="equation" aria-label="L2 of A and B equals the square root of the sum of A minus B squared">
+                    L₂(A, B) = √(Σ(A − B)²)
+                </div>
+                <p class="equation-note">
+                    NumPy subtracts and squares corresponding pixels element by element.
+                    The smallest distance wins, so a better match means a lower score.
+                </p>
+            </div>
+
+            <div class="project-section-text">
+                <p>
+                    Rolling an array wraps pixels from one edge to the opposite edge.
+                    Since the largest candidate displacement is 15 pixels, I remove a
+                    fixed 15-pixel border after each shift and score only the safe
+                    interior. Cropping after shifting prevents wrapped pixels from
+                    influencing the metric, while using the same region for every
+                    candidate keeps scores comparable.
+                </p>
+            </div>
+
+            <div class="comparison-panel">
+                <h3 class="comparison-heading">Cathedral · naive stacking vs. single-scale L2</h3>
+                <div class="comparison-grid">
+                    <figure>
+                        <img
+                            src="./media/comparisons/cathedral-unaligned.jpg"
+                            alt="Cathedral channels stacked without alignment"
+                            width="344"
+                            height="300"
+                            loading="lazy"
+                        >
+                        <figcaption>Before · no alignment</figcaption>
+                    </figure>
+                    <figure>
+                        <img
+                            src="./media/results/cathedral.jpg"
+                            alt="Cathedral after single-scale channel alignment"
+                            width="332"
+                            height="291"
+                            loading="lazy"
+                        >
+                        <figcaption class="offset-caption">
+                            <span>After · B reference</span>
+                            <code>G (5, 2) · R (12, 3)</code>
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+
+            <div class="comparison-panel">
+                <h3 class="comparison-heading">All low-resolution JPEG results</h3>
+                <div class="result-grid">
+                    <article class="result-card">
+                        <figure>
+                            <img src="./media/results/cathedral.jpg" alt="Aligned Cathedral result" width="332" height="291" loading="lazy">
+                        </figure>
+                        <div class="result-card-header">
+                            <h3>Cathedral</h3>
+                            <span class="result-method">Single-scale</span>
+                        </div>
+                        <ul class="offset-list">
+                            <li>G→B <code>(5, 2)</code></li>
+                            <li>R→B <code>(12, 3)</code></li>
+                        </ul>
+                    </article>
+
+                    <article class="result-card">
+                        <figure>
+                            <img src="./media/results/monastery.jpg" alt="Aligned Monastery result" width="337" height="295" loading="lazy">
+                        </figure>
+                        <div class="result-card-header">
+                            <h3>Monastery</h3>
+                            <span class="result-method">Single-scale</span>
+                        </div>
+                        <ul class="offset-list">
+                            <li>G→B <code>(−3, 2)</code></li>
+                            <li>R→B <code>(3, 2)</code></li>
+                        </ul>
+                    </article>
+
+                    <article class="result-card">
+                        <figure>
+                            <img src="./media/results/tobolsk.jpg" alt="Aligned Tobolsk result" width="337" height="295" loading="lazy">
+                        </figure>
+                        <div class="result-card-header">
+                            <h3>Tobolsk</h3>
+                            <span class="result-method">Single-scale</span>
+                        </div>
+                        <ul class="offset-list">
+                            <li>G→B <code>(3, 2)</code></li>
+                            <li>R→B <code>(6, 3)</code></li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="pyramid" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">03</span>
+                <h2>Multi-Scale<br>Image Pyramid</h2>
+            </div>
+
+            <div class="pyramid-layout">
+                <div class="pyramid-copy">
+                    <p>
+                        Large TIFF plates can require displacements far beyond ±15 pixels,
+                        making a full-resolution exhaustive search expensive. Downsampling
+                        makes a large displacement small enough to recover with the same
+                        local search window.
+                    </p>
+                    <p>
+                        I average each non-overlapping 2×2 block into one pixel. This is a
+                        simple box low-pass filter followed by a factor-of-two reduction—not
+                        a Gaussian pyramid. Matching pyramids are built for the reference
+                        and moving images until the largest dimension is at most 500 pixels.
+                    </p>
+                    <p>
+                        Alignment begins at the coarsest level. At each finer level, I
+                        multiply the previous displacement by two and search a ±15-pixel
+                        neighborhood around that estimate. The final shift is applied to
+                        the original full-resolution channel.
+                    </p>
+                </div>
+
+                <div class="pyramid-flow" aria-label="Coarse-to-fine alignment diagram">
+                    <div class="pyramid-level"><span>Coarsest</span><span>search ±15</span></div>
+                    <div class="pyramid-level"><span>2× larger</span><span>shift ×2, refine</span></div>
+                    <div class="pyramid-level"><span>2× larger</span><span>shift ×2, refine</span></div>
+                    <div class="pyramid-level"><span>Full size</span><span>final refinement</span></div>
+                    <div class="pyramid-note">coarse estimate → scaled estimate → local search</div>
+                </div>
+            </div>
+
+            <div class="comparison-panel">
+                <h3 class="comparison-heading">Harvesters · naive stacking vs. pyramid L2</h3>
+                <div class="comparison-grid">
+                    <figure>
+                        <img
+                            src="./media/comparisons/harvesters-unaligned.jpg"
+                            alt="Harvesters channels stacked without alignment"
+                            width="1600"
+                            height="1399"
+                            loading="lazy"
+                        >
+                        <figcaption>Before · no alignment</figcaption>
+                    </figure>
+                    <figure>
+                        <img
+                            src="./media/results/harvesters.jpg"
+                            alt="Harvesters after pyramid channel alignment"
+                            width="1600"
+                            height="1399"
+                            loading="lazy"
+                        >
+                        <figcaption class="offset-caption">
+                            <span>After · B reference</span>
+                            <code>G (59, 13) · R (125, 13)</code>
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+
+            <div class="project-section-text">
+                <p>
+                    I later reran four residual failure cases with normalized
+                    cross-correlation while keeping the same pyramid and green reference.
+                    NCC subtracts each crop’s mean, normalizes both crops by their vector
+                    norms, and selects the largest correlation. This reduces sensitivity
+                    to simple cross-channel brightness differences without changing the
+                    translation model.
+                </p>
+                <p>
+                    Kid still showed separation, so I tried a Sobel filter that I had just
+                    learned about in class. I am still learning how to use it well, but my
+                    current understanding is that Sobel estimates horizontal and vertical
+                    intensity changes and combines them into an edge-magnitude image. I
+                    aligned those edge maps with the same L2 pyramid, then applied the
+                    resulting shifts to the original channels—not to the edge images.
+                </p>
+            </div>
+        </section>
+
+
+        <section id="provided-results" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">04</span>
+                <h2>Full Dataset<br>Results</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    These are all 14 provided examples. JPEGs use the single-scale
+                    search; TIFFs use the pyramid. Offsets are reported as
+                    <code>(Δy, Δx)</code>, matching the order passed to
+                    <code>np.roll</code>. Blue is fixed by default; every green-reference
+                    NCC, or Sobel exception is explicitly labeled.
+                </p>
+            </div>
+
+            <div class="result-grid">
+                <article class="result-card">
+                    <figure><img src="./media/results/cathedral.jpg" alt="Aligned Cathedral result" width="332" height="291" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Cathedral</h3><span class="result-method">Single-scale</span></div>
+                    <ul class="offset-list"><li>G→B <code>(5, 2)</code></li><li>R→B <code>(12, 3)</code></li></ul>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/church.jpg" alt="Church aligned using green as the reference" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Church</h3><span class="result-method">Pyramid · G ref.</span></div>
+                    <ul class="offset-list"><li>B→G <code>(−24, 4)</code></li><li>R→G <code>(33, −7)</code></li></ul>
+                    <p class="card-note">Blue-reference L2 blurred the architecture, so green is fixed here. The green-reference result is visibly sharper.</p>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/emir-green-reference.jpg" alt="Emir of Bukhara aligned using green as the reference" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Emir of Bukhara</h3><span class="result-method">Pyramid · G ref.</span></div>
+                    <ul class="offset-list"><li>B→G <code>(−49, −22)</code></li><li>R→G <code>(57, 16)</code></li></ul>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/harvesters.jpg" alt="Aligned Harvesters result" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Harvesters</h3><span class="result-method">Pyramid</span></div>
+                    <ul class="offset-list"><li>G→B <code>(59, 13)</code></li><li>R→B <code>(125, 13)</code></li></ul>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/icon.jpg" alt="Aligned Icon result" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Icon</h3><span class="result-method">Pyramid</span></div>
+                    <ul class="offset-list"><li>G→B <code>(41, 16)</code></li><li>R→B <code>(90, 23)</code></li></ul>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/ilemselga.jpg" alt="Ilemselga aligned using green as the reference" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Ilemselga</h3><span class="result-method">Pyramid · NCC · G ref.</span></div>
+                    <ul class="offset-list"><li>B→G <code>(−40, 4)</code></li><li>R→G <code>(90, 3)</code></li></ul>
+                    <p class="card-note">Blue-reference L2 was visibly soft. NCC with green fixed selected the same offsets as green-reference L2, so fine chromatic fringing remains.</p>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/melons.jpg" alt="Aligned Melons result" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Melons</h3><span class="result-method">Pyramid</span></div>
+                    <ul class="offset-list"><li>G→B <code>(82, 4)</code></li><li>R→B <code>(180, 12)</code></li></ul>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/monastery.jpg" alt="Aligned Monastery result" width="337" height="295" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Monastery</h3><span class="result-method">Single-scale</span></div>
+                    <ul class="offset-list"><li>G→B <code>(−3, 2)</code></li><li>R→B <code>(3, 2)</code></li></ul>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/religous-painting.jpg" alt="Aligned Religious Painting result" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Religious Painting</h3><span class="result-method">Pyramid</span></div>
+                    <ul class="offset-list"><li>G→B <code>(25, 3)</code></li><li>R→B <code>(68, 8)</code></li></ul>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/self-portrait.jpg" alt="Self-Portrait aligned to green with residual channel separation" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Self-Portrait</h3><span class="result-method">Pyramid · NCC · G ref.</span></div>
+                    <ul class="offset-list"><li>B→G <code>(−81, 1)</code></li><li>R→G <code>(98, 7)</code></li></ul>
+                    <p class="card-note">Blue did not work well as the reference. NCC with green fixed matched the L2 offsets exactly; the remaining blue/yellow edges are not resolved by one global translation.</p>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/siren.jpg" alt="Aligned Siren result" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Siren</h3><span class="result-method">Pyramid</span></div>
+                    <ul class="offset-list"><li>G→B <code>(48, −7)</code></li><li>R→B <code>(97, −24)</code></li></ul>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/three-generations.jpg" alt="Three Generations aligned to green with residual channel separation" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Three Generations</h3><span class="result-method">Pyramid · NCC · G ref.</span></div>
+                    <ul class="offset-list"><li>B→G <code>(−54, −5)</code></li><li>R→G <code>(57, 0)</code></li></ul>
+                    <p class="card-note">Blue-reference alignment was visibly blurred. NCC with green fixed returned the same offsets as L2, leaving some separation around faces and railings.</p>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/tobolsk.jpg" alt="Aligned Tobolsk result" width="337" height="295" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Tobolsk</h3><span class="result-method">Single-scale</span></div>
+                    <ul class="offset-list"><li>G→B <code>(3, 2)</code></li><li>R→B <code>(6, 3)</code></li></ul>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/wharf.jpg" alt="Aligned Wharf result" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Wharf</h3><span class="result-method">Pyramid</span></div>
+                    <ul class="offset-list"><li>G→B <code>(15, −7)</code></li><li>R→B <code>(83, −18)</code></li></ul>
+                </article>
+            </div>
+
+            <p class="result-note">
+                For presentation, each result is cropped to the channels’ common valid
+                overlap, trimmed by a fixed six-percent plate margin, and center-cropped to the
+                Cathedral/Tobolsk aspect ratio. This happens only after alignment and is
+                not an automatic border-detection method.
+            </p>
+        </section>
+
+
+        <section id="emir" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">05</span>
+                <h2>Emir of Bukhara:<br>A Reference-Channel Failure</h2>
+            </div>
+
+            <div class="case-study">
+                <div class="case-study-intro">
+                    <h3>Same metric.<br>Better reference.</h3>
+                    <p>
+                        With the normal pipeline, green aligns to blue reliably but red
+                        does not. Emir’s red- and blue-filtered exposures differ unusually
+                        strongly in raw intensity appearance, so direct red-to-blue L2
+                        matching selects a visibly poor displacement. I kept L2 and the
+                        pyramid unchanged, fixed green instead, and aligned both blue and
+                        red to it. Green worked as a better common reference for this image;
+                        that is an empirical heuristic, not a general wavelength rule.
+                    </p>
+                </div>
+
+                <div class="case-study-media">
+                    <figure>
+                        <img
+                            src="./media/results/emir-blue-reference.jpg"
+                            alt="Poor Emir reconstruction using blue as the reference channel"
+                            width="1600"
+                            height="1399"
+                            loading="lazy"
+                        >
+                        <figcaption class="offset-caption">
+                            <span>B reference · visible red ghosting</span>
+                            <code>G (48, 22) · R (104, 23)</code>
+                        </figcaption>
+                    </figure>
+
+                    <figure>
+                        <img
+                            src="./media/results/emir-green-reference.jpg"
+                            alt="Improved Emir reconstruction using green as the reference channel"
+                            width="1600"
+                            height="1399"
+                            loading="lazy"
+                        >
+                        <figcaption class="offset-caption">
+                            <span>G reference · improved</span>
+                            <code>B (−49, −22) · R (57, 16)</code>
+                        </figcaption>
+                    </figure>
+                </div>
+
+                <div class="debug-notes">
+                    <article class="debug-note">
+                        <span class="debug-note-number">01</span>
+                        <h4>Diagnose the pair</h4>
+                        <p>
+                            Green and blue already agreed. The major error came from
+                            matching red directly to blue, whose corresponding regions
+                            did not look similar enough to raw-pixel L2.
+                        </p>
+                    </article>
+
+                    <article class="debug-note">
+                        <span class="debug-note-number">02</span>
+                        <h4>Alternatives considered</h4>
+                        <p>
+                            I considered NCC, which mean-centers and normalizes image
+                            vectors, and Sobel gradients, whose derivative kernels emphasize
+                            edges. I later implemented NCC for four residual cases and then
+                            tried Sobel on Kid after NCC remained imperfect. Sobel had just
+                            been covered in class, and I am still learning the method.
+                        </p>
+                    </article>
+
+                    <article class="debug-note">
+                        <span class="debug-note-number">03</span>
+                        <h4>Choose the simpler fix</h4>
+                        <p>
+                            Green gave L2 a more compatible comparison for both other
+                            channels, so changing only Emir’s reference solved the practical
+                            failure. I use the same fallback only on the few other plates
+                            where the blue-reference result is visibly worse.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="additional-results" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">06</span>
+                <h2>Additional<br>Prokudin-Gorskii Images</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    I ran the same coarse-to-fine pipeline on the three additional
+                    full-resolution plates in my data folder. Blue and L2 remain the
+                    defaults; Kid uses L2 on Sobel edge maps with blue fixed after both its
+                    raw-pixel and NCC results remained imperfect. Local filenames are shown
+                    as titles; no offsets were hand-tuned.
+                </p>
+            </div>
+
+            <div class="result-grid">
+                <article class="result-card">
+                    <figure><img src="./media/results/four-people.jpg" alt="Aligned Four People result" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Four People</h3><span class="result-method">four_people.tif</span></div>
+                    <ul class="offset-list"><li>G→B <code>(49, −6)</code></li><li>R→B <code>(84, −36)</code></li></ul>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/kid.jpg" alt="Kid aligned from Sobel edge maps with residual channel separation" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Kid</h3><span class="result-method">kid.tif · Sobel · B ref.</span></div>
+                    <ul class="offset-list"><li>G→B <code>(45, −13)</code></li><li>R→B <code>(100, −21)</code></li></ul>
+                    <p class="card-note">After raw-pixel L2 and NCC remained imperfect, I aligned Sobel edge maps instead. The structural match improves modestly, though some color separation remains.</p>
+                </article>
+
+                <article class="result-card">
+                    <figure><img src="./media/results/ordezh.jpg" alt="Ordezh aligned using green as the reference" width="1600" height="1399" loading="lazy"></figure>
+                    <div class="result-card-header"><h3>Ordezh</h3><span class="result-method">ordezh.tif · G ref.</span></div>
+                    <ul class="offset-list"><li>B→G <code>(−40, 2)</code></li><li>R→G <code>(111, −5)</code></li></ul>
+                    <p class="card-note">Blue-reference L2 selected a poor match; fixing green produces the cleaner final reconstruction shown here.</p>
+                </article>
+            </div>
+        </section>
+
+
+        <section id="implementation" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">07</span>
+                <h2>Implementation Notes<br>&amp; What I Learned</h2>
+            </div>
+
+            <div class="insight-grid">
+                <article class="insight">
+                    <h3>Images are arrays</h3>
+                    <p>
+                        Converting the plate to floating point made channel slicing,
+                        subtraction, squaring, and stacking direct NumPy operations.
+                    </p>
+                </article>
+
+                <article class="insight">
+                    <h3>Borders can dominate</h3>
+                    <p>
+                        <code>np.roll</code> is convenient, but its wraparound must be
+                        excluded from every score. Shift first, crop second, score third.
+                    </p>
+                </article>
+
+                <article class="insight">
+                    <h3>Coarse-to-fine scales</h3>
+                    <p>
+                        Box averaging shrinks the search problem enough to estimate large
+                        full-resolution shifts with the same small local window.
+                    </p>
+                </article>
+
+                <article class="insight">
+                    <h3>Reference choice matters</h3>
+                    <p>
+                        L2 compares intensities, not semantic structure. Emir showed that
+                        changing the comparison pair can matter as much as changing a metric.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+
+        <section id="conclusion" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">08</span>
+                <h2>Results &amp;<br>Conclusion</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    The single-scale method aligns all three small JPEGs cleanly, and the
+                    same raw-pixel L2 objective becomes practical on high-resolution plates
+                    through the image pyramid. Most TIFFs converge to visually coherent
+                    reconstructions, and the Emir failure is resolved by changing only its
+                    reference channel.
+                </p>
+                <p>
+                    The fixed pipeline is not perfect. Green-reference alignment resolves
+                    Church and Ordezh cleanly. NCC returned the same shifts as L2 for
+                    Ilemselga, Self-Portrait, and Three Generations. Sobel edge alignment
+                    gives Kid G→B <code>(45, −13)</code> and R→B <code>(100, −21)</code>,
+                    but some separation remains. These experiments suggest that a single
+                    global translation cannot explain every residual difference; a more
+                    flexible motion model would be the next experiment.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+
+    <footer>
+        <span>Manu Thakur</span>
+        <span>Berkeley CS 180 · 2026</span>
+    </footer>
+
+</body>
+</html>

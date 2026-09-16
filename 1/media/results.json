@@ -1,0 +1,498 @@
+{
+  "metric": "L2 by default; NCC or Sobel edge features for documented failure cases",
+  "offset_order": [
+    "delta_y",
+    "delta_x"
+  ],
+  "default_reference": "B",
+  "search_radius": 15,
+  "pyramid_threshold": 500,
+  "provided": [
+    {
+      "name": "Cathedral",
+      "source": "cathedral.jpg",
+      "category": "provided",
+      "method": "single-scale",
+      "reference": "B",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "G_to_B": [
+          5,
+          2
+        ],
+        "R_to_B": [
+          12,
+          3
+        ]
+      },
+      "result": "results/cathedral.jpg",
+      "unaligned": "comparisons/cathedral-unaligned.jpg"
+    },
+    {
+      "name": "Church",
+      "source": "church.tif",
+      "category": "provided",
+      "method": "pyramid",
+      "reference": "G",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "B_to_G": [
+          -24,
+          4
+        ],
+        "R_to_G": [
+          33,
+          -7
+        ]
+      },
+      "result": "results/church.jpg",
+      "unaligned": "comparisons/church-unaligned.jpg",
+      "blue_reference_offsets": {
+        "G_to_B": [
+          9,
+          -8
+        ],
+        "R_to_B": [
+          57,
+          -14
+        ]
+      },
+      "reference_reason": "Blue-reference raw-pixel L2 was visibly poor; green was used as an image-specific fallback."
+    },
+    {
+      "name": "Emir of Bukhara",
+      "source": "emir.tif",
+      "category": "provided",
+      "method": "pyramid",
+      "reference": "G",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "B_to_G": [
+          -49,
+          -22
+        ],
+        "R_to_G": [
+          57,
+          16
+        ]
+      },
+      "result": "results/emir-green-reference.jpg",
+      "unaligned": "comparisons/emir-unaligned.jpg",
+      "blue_reference_offsets": {
+        "G_to_B": [
+          48,
+          22
+        ],
+        "R_to_B": [
+          104,
+          23
+        ]
+      },
+      "reference_reason": "Blue-reference raw-pixel L2 was visibly poor; green was used as an image-specific fallback.",
+      "emir_comparison": {
+        "blue_reference_result": "results/emir-blue-reference.jpg",
+        "blue_reference_offsets": {
+          "G_to_B": [
+            48,
+            22
+          ],
+          "R_to_B": [
+            104,
+            23
+          ]
+        },
+        "green_reference_result": "results/emir-green-reference.jpg",
+        "green_reference_offsets": {
+          "B_to_G": [
+            -49,
+            -22
+          ],
+          "R_to_G": [
+            57,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "Harvesters",
+      "source": "harvesters.tif",
+      "category": "provided",
+      "method": "pyramid",
+      "reference": "B",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "G_to_B": [
+          59,
+          13
+        ],
+        "R_to_B": [
+          125,
+          13
+        ]
+      },
+      "result": "results/harvesters.jpg",
+      "unaligned": "comparisons/harvesters-unaligned.jpg"
+    },
+    {
+      "name": "Icon",
+      "source": "icon.tif",
+      "category": "provided",
+      "method": "pyramid",
+      "reference": "B",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "G_to_B": [
+          41,
+          16
+        ],
+        "R_to_B": [
+          90,
+          23
+        ]
+      },
+      "result": "results/icon.jpg"
+    },
+    {
+      "name": "Ilemselga",
+      "source": "ilemselga.tif",
+      "category": "provided",
+      "method": "pyramid",
+      "metric": "NCC",
+      "reference": "G",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "B_to_G": [
+          -40,
+          4
+        ],
+        "R_to_G": [
+          90,
+          3
+        ]
+      },
+      "result": "results/ilemselga.jpg",
+      "blue_reference_offsets": {
+        "G_to_B": [
+          40,
+          -4
+        ],
+        "R_to_B": [
+          129,
+          9
+        ]
+      },
+      "reference_reason": "Blue-reference L2 was visibly poor and green-reference L2 left residual separation; NCC was used with green fixed."
+    },
+    {
+      "name": "Melons",
+      "source": "melons.tif",
+      "category": "provided",
+      "method": "pyramid",
+      "reference": "B",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "G_to_B": [
+          82,
+          4
+        ],
+        "R_to_B": [
+          180,
+          12
+        ]
+      },
+      "result": "results/melons.jpg"
+    },
+    {
+      "name": "Monastery",
+      "source": "monastery.jpg",
+      "category": "provided",
+      "method": "single-scale",
+      "reference": "B",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "G_to_B": [
+          -3,
+          2
+        ],
+        "R_to_B": [
+          3,
+          2
+        ]
+      },
+      "result": "results/monastery.jpg"
+    },
+    {
+      "name": "Religious Painting",
+      "source": "religous_painting.tif",
+      "category": "provided",
+      "method": "pyramid",
+      "reference": "B",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "G_to_B": [
+          25,
+          3
+        ],
+        "R_to_B": [
+          68,
+          8
+        ]
+      },
+      "result": "results/religous-painting.jpg"
+    },
+    {
+      "name": "Self-Portrait",
+      "source": "self_portrait.tif",
+      "category": "provided",
+      "method": "pyramid",
+      "metric": "NCC",
+      "reference": "G",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "B_to_G": [
+          -81,
+          1
+        ],
+        "R_to_G": [
+          98,
+          7
+        ]
+      },
+      "result": "results/self-portrait.jpg",
+      "blue_reference_offsets": {
+        "G_to_B": [
+          77,
+          -1
+        ],
+        "R_to_B": [
+          176,
+          34
+        ]
+      },
+      "reference_reason": "Blue-reference L2 was visibly poor and green-reference L2 left residual separation; NCC was used with green fixed."
+    },
+    {
+      "name": "Siren",
+      "source": "siren.tif",
+      "category": "provided",
+      "method": "pyramid",
+      "reference": "B",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "G_to_B": [
+          48,
+          -7
+        ],
+        "R_to_B": [
+          97,
+          -24
+        ]
+      },
+      "result": "results/siren.jpg"
+    },
+    {
+      "name": "Three Generations",
+      "source": "three_generations.tif",
+      "category": "provided",
+      "method": "pyramid",
+      "metric": "NCC",
+      "reference": "G",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "B_to_G": [
+          -54,
+          -5
+        ],
+        "R_to_G": [
+          57,
+          0
+        ]
+      },
+      "result": "results/three-generations.jpg",
+      "blue_reference_offsets": {
+        "G_to_B": [
+          52,
+          5
+        ],
+        "R_to_B": [
+          111,
+          10
+        ]
+      },
+      "reference_reason": "Blue-reference L2 was visibly poor and green-reference L2 left residual separation; NCC was used with green fixed."
+    },
+    {
+      "name": "Tobolsk",
+      "source": "tobolsk.jpg",
+      "category": "provided",
+      "method": "single-scale",
+      "reference": "B",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "G_to_B": [
+          3,
+          2
+        ],
+        "R_to_B": [
+          6,
+          3
+        ]
+      },
+      "result": "results/tobolsk.jpg"
+    },
+    {
+      "name": "Wharf",
+      "source": "wharf.tif",
+      "category": "provided",
+      "method": "pyramid",
+      "reference": "B",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "G_to_B": [
+          15,
+          -7
+        ],
+        "R_to_B": [
+          83,
+          -18
+        ]
+      },
+      "result": "results/wharf.jpg"
+    }
+  ],
+  "custom": [
+    {
+      "name": "Four People",
+      "source": "four_people.tif",
+      "category": "custom",
+      "method": "pyramid",
+      "reference": "B",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "G_to_B": [
+          49,
+          -6
+        ],
+        "R_to_B": [
+          84,
+          -36
+        ]
+      },
+      "result": "results/four-people.jpg"
+    },
+    {
+      "name": "Kid",
+      "source": "kid.tif",
+      "category": "custom",
+      "method": "pyramid",
+      "metric": "L2 on Sobel edge maps",
+      "reference": "B",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "G_to_B": [
+          45,
+          -13
+        ],
+        "R_to_B": [
+          100,
+          -21
+        ]
+      },
+      "result": "results/kid.jpg",
+      "feature": "Sobel edge magnitude",
+      "raw_pixel_blue_reference_offsets": {
+        "G_to_B": [
+          40,
+          -9
+        ],
+        "R_to_B": [
+          103,
+          -20
+        ]
+      },
+      "reference_reason": "Raw-pixel L2 and NCC left visible separation; Sobel edge maps were aligned with the L2 pyramid while blue remained fixed."
+    },
+    {
+      "name": "Ordezh",
+      "source": "ordezh.tif",
+      "category": "custom",
+      "method": "pyramid",
+      "reference": "G",
+      "offset_order": [
+        "delta_y",
+        "delta_x"
+      ],
+      "offsets": {
+        "B_to_G": [
+          -40,
+          2
+        ],
+        "R_to_G": [
+          111,
+          -5
+        ]
+      },
+      "result": "results/ordezh.jpg",
+      "blue_reference_offsets": {
+        "G_to_B": [
+          -9,
+          -3
+        ],
+        "R_to_B": [
+          96,
+          -10
+        ]
+      },
+      "reference_reason": "Blue-reference raw-pixel L2 was visibly poor; green was used as an image-specific fallback."
+    }
+  ]
+}
