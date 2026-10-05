@@ -13,7 +13,9 @@
         ".project-facts, .section-lede, .process-flow, .equation-panel, " +
         ".pyramid-flow, .comparison-panel, .comparison-grid figure, " +
         ".result-card, .case-study, .case-study-media figure, " +
-        ".debug-note, .insight"
+        ".debug-note, .insight, .project2-hero-grid figure, .code-card, " +
+        ".report-figure, .technical-grid figure, .stack-grid figure, " +
+        ".blend-story, .masked-levels-panel"
     );
 
     revealElements.forEach((element) => {
@@ -21,7 +23,8 @@
 
         if (element.matches(
             ".image-grid figure, .full-image, .comparison-grid figure, " +
-            ".case-study-media figure"
+            ".case-study-media figure, .project2-hero-grid figure, " +
+            ".report-figure, .technical-grid figure, .stack-grid figure"
         )) {
             element.classList.add("reveal-image");
         }
