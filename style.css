@@ -947,6 +947,15 @@ code {
     border-left: 1px solid rgba(255, 255, 255, 0.15);
 }
 
+.code-card-wide {
+    grid-column: 1 / -1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.code-card-wide + .code-card {
+    border-left: 0;
+}
+
 .code-card-label {
     display: block;
     margin-bottom: 22px;
@@ -1231,6 +1240,21 @@ code {
 .project2-page .portrait-report,
 .project2-page .compact-kernel-figure {
     width: fit-content;
+}
+
+.project2-page .figure-342 {
+    max-width: 1100px;
+}
+
+.project2-page .learning-lede {
+    margin-bottom: 48px;
+    padding: 28px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+}
+
+.project2-page .learning-lede p {
+    margin: 0;
 }
 
 .project2-page .project2-case-study,
@@ -1629,5 +1653,65 @@ footer {
     .motion-enabled .reveal-image.is-visible img {
         transform: none;
         translate: none;
+    }
+}
+
+
+/* Keep the static report complete and readable when saved as a PDF. */
+@media print {
+    @page {
+        size: letter;
+        margin: 0.55in;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .motion-enabled .reveal,
+    .motion-enabled .reveal.is-visible,
+    .motion-enabled .project-card.reveal,
+    .motion-enabled .project-card.reveal.is-visible {
+        opacity: 1 !important;
+        transform: none !important;
+        clip-path: none !important;
+    }
+
+    .motion-enabled .reveal-image,
+    .motion-enabled .reveal-image.is-visible {
+        clip-path: none !important;
+    }
+
+    .motion-enabled .reveal-image img,
+    .motion-enabled .reveal-image.is-visible img {
+        transform: none !important;
+        translate: none !important;
+    }
+
+    .project2-page figure,
+    .project2-page .code-card,
+    .project2-page .equation-panel,
+    .project2-page .blend-story,
+    .project2-page .masked-levels-panel,
+    .project2-page .insight {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .project2-page figure img {
+        width: auto !important;
+        max-width: 100% !important;
+        max-height: 8.35in !important;
+        object-fit: contain;
+    }
+
+    .project2-page .blend-story-copy,
+    .project2-page .masked-levels-copy {
+        position: static;
     }
 }

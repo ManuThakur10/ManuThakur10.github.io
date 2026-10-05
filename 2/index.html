@@ -22,7 +22,6 @@
         <div class="nav-links">
             <a href="#hybrids">Hybrids</a>
             <a href="#blending">Blending</a>
-            <a href="../Project2/proj2_final.ipynb">Notebook</a>
         </div>
     </nav>
 
@@ -100,9 +99,31 @@
                     Tests against <code>scipy.signal.convolve2d</code> matched to floating-point
                     precision: the largest measured error was <code>3.553 × 10⁻¹⁵</code>.
                 </p>
+                <p>
+                    On a 128×128 image with a 9×9 box filter, the fresh-kernel run measured
+                    <code>0.4357 s</code> for four loops, <code>0.0680 s</code> for two loops, and
+                    <code>0.0021 s</code> for SciPy. Moving the inner work into NumPy made the
+                    two-loop version about six times faster, while SciPy's optimized
+                    implementation was over 200 times faster than the four-loop version.
+                    These timings are hardware-dependent, but the performance hierarchy is clear.
+                </p>
             </div>
 
             <div class="code-pair" aria-label="Core convolution implementations">
+                <article class="code-card code-card-wide">
+                    <span class="code-card-label">Kernel flip and zero-padding</span>
+                    <pre><code>kh, kw = kernel.shape
+top, bottom = kh // 2, (kh - 1) // 2
+left, right = kw // 2, (kw - 1) // 2
+
+flipped_kernel = np.flip(kernel)
+padded = np.pad(
+    image,
+    ((top, bottom), (left, right)),
+    mode="constant",
+    constant_values=0
+)</code></pre>
+                </article>
                 <article class="code-card">
                     <span class="code-card-label">Four-loop core</span>
                     <pre><code>for row in range(H):
@@ -137,7 +158,7 @@
                     alt="Selfie shown in grayscale, after a 9 by 9 box blur, and after horizontal and vertical finite differences"
                     width="759"
                     height="889"
-                    loading="lazy"
+                    loading="eager"
                 >
                 <figcaption>
                     A 9×9 box filter produces a deliberately subtle blur; D<sub>x</sub> and
@@ -177,7 +198,7 @@
                     alt="Cameraman finite-difference derivatives, gradient magnitude, and thresholded edge map"
                     width="1358"
                     height="889"
-                    loading="lazy"
+                    loading="eager"
                 >
                 <figcaption>Finite differences before smoothing · threshold 0.18</figcaption>
             </figure>
@@ -191,7 +212,7 @@
                             alt="Comparison of raw and Gaussian-smoothed cameraman edge detection"
                             width="1347"
                             height="889"
-                            loading="lazy"
+                            loading="eager"
                         >
                         <figcaption>
                             A 9×9 Gaussian with σ=2 suppresses texture and allows a lower
@@ -204,7 +225,7 @@
                             alt="Visualized 9 by 9 Gaussian kernel with sigma 2"
                             width="404"
                             height="425"
-                            loading="lazy"
+                            loading="eager"
                         >
                         <figcaption>Normalized 9×9 Gaussian kernel · σ=2</figcaption>
                     </figure>
@@ -214,7 +235,7 @@
                             alt="Derivative of Gaussian filters in x and y"
                             width="842"
                             height="390"
-                            loading="lazy"
+                            loading="eager"
                         >
                         <figcaption>Derivative-of-Gaussian filters D<sub>x</sub>G and D<sub>y</sub>G</figcaption>
                     </figure>
@@ -236,7 +257,7 @@
                     alt="Two-step Gaussian smoothing and differentiation compared with single Derivative-of-Gaussian convolutions"
                     width="831"
                     height="1190"
-                    loading="lazy"
+                    loading="eager"
                 >
                 <figcaption>
                     Two-step derivatives and single-convolution DoG results agree away from
@@ -275,7 +296,7 @@
                     alt="Taj Mahal unsharp masking process showing the original, blur, high-frequency residual, and sharpened outputs"
                     width="1358"
                     height="889"
-                    loading="lazy"
+                    loading="eager"
                 >
                 <figcaption>Taj Mahal · σ=2 · α=1.5</figcaption>
             </figure>
@@ -287,7 +308,7 @@
                         alt="Taj Mahal sharpened using four different alpha values"
                         width="1358"
                         height="889"
-                        loading="lazy"
+                        loading="eager"
                     >
                     <figcaption>Parameter sweep · α from 0.5 to 3.0</figcaption>
                 </figure>
@@ -297,7 +318,7 @@
                         alt="Charizard image before blur, after blur, and after attempted sharpening"
                         width="1456"
                         height="453"
-                        loading="lazy"
+                        loading="eager"
                     >
                     <figcaption>
                         Blur-then-sharpen evaluation · sharpening restores contrast but cannot
@@ -348,10 +369,10 @@
                 <figure class="report-figure flush-figure">
                     <img
                         src="./media/derek-nutmeg.webp"
-                        alt="Aligned Derek and Nutmeg images followed by their hybrid"
+                        alt="Original and aligned Derek and Nutmeg images followed by their hybrid"
                         width="1489"
-                        height="489"
-                        loading="lazy"
+                        height="989"
+                        loading="eager"
                     >
                     <figcaption>σ<sub>low</sub>=8 · σ<sub>high</sub>=5 · high-frequency gain=1.5</figcaption>
                 </figure>
@@ -373,7 +394,7 @@
                         alt="Aligned brindle dog and tabby followed by the final hybrid image"
                         width="1489"
                         height="443"
-                        loading="lazy"
+                        loading="eager"
                     >
                     <figcaption>Selected result · σ<sub>low</sub>=7 · σ<sub>high</sub>=4 · gain=1.2</figcaption>
                 </figure>
@@ -385,7 +406,7 @@
                             alt="Sixteen dog and cat hybrid parameter combinations"
                             width="1189"
                             height="1154"
-                            loading="lazy"
+                            loading="eager"
                         >
                         <figcaption>Cutoff search across four low-pass and four high-pass scales</figcaption>
                     </figure>
@@ -395,7 +416,7 @@
                             alt="Complete dog and cat hybrid frequency analysis with image and Fourier-domain views"
                             width="1011"
                             height="2890"
-                            loading="lazy"
+                            loading="eager"
                         >
                         <figcaption>
                             Full frequency analysis · inputs, aligned sources, filtered images,
@@ -417,10 +438,10 @@
                 <figure class="report-figure flush-figure">
                     <img
                         src="./media/lion-tiger-final.webp"
-                        alt="Aligned tiger and lion followed by the final hybrid image"
-                        width="1475"
-                        height="509"
-                        loading="lazy"
+                        alt="Original and aligned tiger and lion images followed by the final hybrid image"
+                        width="1486"
+                        height="992"
+                        loading="eager"
                     >
                     <figcaption>σ<sub>low</sub>=5 · σ<sub>high</sub>=2.5 · gain=1.10</figcaption>
                 </figure>
@@ -456,22 +477,36 @@
 
             <div class="stack-grid">
                 <figure>
-                    <img src="./media/apple-gaussian.webp" alt="Six levels of the apple Gaussian stack" width="1274" height="789" loading="lazy">
+                    <img src="./media/apple-gaussian.webp" alt="Six levels of the apple Gaussian stack" width="1274" height="789" loading="eager">
                     <figcaption>Apple · Gaussian stack</figcaption>
                 </figure>
                 <figure>
-                    <img src="./media/apple-laplacian.webp" alt="Six levels of the apple Laplacian stack" width="1274" height="789" loading="lazy">
+                    <img src="./media/apple-laplacian.webp" alt="Six levels of the apple Laplacian stack" width="1274" height="789" loading="eager">
                     <figcaption>Apple · Laplacian stack</figcaption>
                 </figure>
                 <figure>
-                    <img src="./media/orange-gaussian.webp" alt="Six levels of the orange Gaussian stack" width="1274" height="789" loading="lazy">
+                    <img src="./media/orange-gaussian.webp" alt="Six levels of the orange Gaussian stack" width="1274" height="789" loading="eager">
                     <figcaption>Orange · Gaussian stack</figcaption>
                 </figure>
                 <figure>
-                    <img src="./media/orange-laplacian.webp" alt="Six levels of the orange Laplacian stack" width="1274" height="789" loading="lazy">
+                    <img src="./media/orange-laplacian.webp" alt="Six levels of the orange Laplacian stack" width="1274" height="789" loading="eager">
                     <figcaption>Orange · Laplacian stack</figcaption>
                 </figure>
             </div>
+
+            <figure class="report-figure figure-342">
+                <img
+                    src="./media/oraple-figure-342.webp"
+                    alt="Twelve labeled panels showing masked apple bands, masked orange bands, and their blended sums at four spatial-frequency levels"
+                    width="1199"
+                    height="1573"
+                    loading="eager"
+                >
+                <figcaption>
+                    Figure 3.42 (a)–(l) recreation · masked apple bands, masked orange bands,
+                    and their blended sums at fine, intermediate, and low-frequency levels
+                </figcaption>
+            </figure>
         </section>
 
 
@@ -518,7 +553,7 @@
                         alt="Apple, orange, feathered mask, and the final Oraple blend"
                         width="901"
                         height="889"
-                        loading="lazy"
+                        loading="eager"
                     >
                     <figcaption>Apple + orange · RGB multiresolution blend</figcaption>
                 </figure>
@@ -540,7 +575,7 @@
                         alt="Desert and ocean sources, tone matching, vertical mask, and final landscape blend"
                         width="1157"
                         height="1190"
-                        loading="lazy"
+                        loading="eager"
                     >
                     <figcaption>Ten stack levels · aligned horizons · tone-match strength 0.5</figcaption>
                 </figure>
@@ -562,7 +597,7 @@
                         alt="Coffee cup, positioned moon, elliptical mask, and final moon coffee blend"
                         width="968"
                         height="989"
-                        loading="lazy"
+                        loading="eager"
                     >
                     <figcaption>Seven levels · elliptical mask · σ=14 mask stack</figcaption>
                 </figure>
@@ -584,7 +619,7 @@
                         alt="Seven rows of masked moon, masked coffee, and blended Laplacian levels"
                         width="1196"
                         height="2440"
-                        loading="lazy"
+                        loading="eager"
                     >
                     <figcaption>Moon masked Lᵢ · coffee masked Lᵢ · blended Lᵢ</figcaption>
                 </figure>
@@ -596,6 +631,18 @@
             <div class="project-section-header">
                 <span class="project-section-number">07</span>
                 <h2>What<br>Worked</h2>
+            </div>
+
+            <div class="section-lede learning-lede">
+                <p>
+                    <strong>The most important thing I learned</strong> was that smoothing makes
+                    spatial scale visible. Early Laplacian levels retain fine gradients, edges,
+                    and texture. As repeated Gaussian smoothing moves toward lower frequencies,
+                    those small variations disappear and the remaining gradients describe broader
+                    features such as overall shape, lighting, and silhouette. I had thought of
+                    smoothing mostly as blur before this project; watching fine and coarse
+                    structure separate level by level made its role in vision much more intuitive.
+                </p>
             </div>
 
             <div class="insight-grid">
@@ -632,8 +679,8 @@
             <p class="result-note">
                 Image sources: CS 180 starter images for Derek, Nutmeg, the apple, and the orange;
                 Wikimedia Commons for the tabby, brindle dog, lion, tiger, desert, ocean, moon,
-                and coffee photographs. Complete code, landmarks, and parameter sweeps are in the
-                <a class="text-link" href="../Project2/proj2_final.ipynb">executed notebook ↗</a>.
+                and coffee photographs. Implementation code and the reproducible notebook are
+                submitted privately through Gradescope.
             </p>
         </section>
 
