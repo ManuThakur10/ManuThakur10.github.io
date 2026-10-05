@@ -1119,6 +1119,172 @@ code {
 }
 
 
+/* Project 2 figures come from notebook canvases with very different aspect
+   ratios. Give each panel a full, centered row instead of squeezing it into
+   editorial sidebars or equal-width columns. */
+.project2-page .project-hero > .eyebrow,
+.project2-page .project-title,
+.project2-page .project-summary {
+    text-align: center;
+}
+
+.project2-page .project-title {
+    max-width: none;
+}
+
+.project2-page .project-summary {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.project2-page .project-section-header {
+    display: block;
+    max-width: 900px;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+}
+
+.project2-page .project-section-number {
+    display: block;
+    margin-bottom: 18px;
+}
+
+.project2-page .section-lede,
+.project2-page .project-section-text {
+    max-width: 780px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.project2-page .equation-panel,
+.project2-page .code-pair {
+    width: 100%;
+    max-width: 1080px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.project2-page .project2-hero-grid,
+.project2-page .project2-analysis-grid,
+.project2-page .project2-balanced-grid,
+.project2-page .technical-grid,
+.project2-page .stack-grid {
+    width: 100%;
+    max-width: 1180px;
+    margin-right: auto;
+    margin-left: auto;
+
+    grid-template-columns: minmax(0, 1fr);
+    gap: 44px;
+}
+
+.project2-page .project2-analysis-grid figure:first-child {
+    grid-column: auto;
+}
+
+.project2-page .project2-hero-grid figure,
+.project2-page .project2-analysis-grid figure,
+.project2-page .project2-balanced-grid figure,
+.project2-page .technical-grid figure,
+.project2-page .stack-grid figure,
+.project2-page .report-figure,
+.project2-page .blend-story figure,
+.project2-page .masked-levels-figure {
+    width: fit-content;
+    max-width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    justify-self: center;
+}
+
+.project2-page .project2-hero-grid img,
+.project2-page .project2-analysis-grid img,
+.project2-page .project2-balanced-grid img,
+.project2-page .technical-grid img,
+.project2-page .stack-grid img,
+.project2-page .report-figure img,
+.project2-page .blend-story img,
+.project2-page .masked-levels-figure img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto !important;
+    margin-right: auto;
+    margin-left: auto;
+
+    aspect-ratio: auto;
+    object-fit: contain;
+}
+
+.project2-page .project2-hero-grid figcaption,
+.project2-page .project2-analysis-grid figcaption,
+.project2-page .project2-balanced-grid figcaption,
+.project2-page .technical-grid figcaption,
+.project2-page .stack-grid figcaption,
+.project2-page .report-figure figcaption,
+.project2-page .blend-story figcaption,
+.project2-page .masked-levels-figure figcaption {
+    text-align: center;
+}
+
+.project2-page .portrait-report,
+.project2-page .compact-kernel-figure {
+    width: fit-content;
+}
+
+.project2-page .project2-case-study,
+.project2-page .blend-story,
+.project2-page .masked-levels-panel {
+    width: 100%;
+    max-width: 1180px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.project2-page .case-study-intro {
+    max-width: 800px;
+    margin-right: auto;
+    margin-left: auto;
+
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    text-align: center;
+}
+
+.project2-page .technical-grid {
+    margin-top: 52px;
+}
+
+.project2-page .frequency-figure {
+    padding-top: 44px;
+    padding-left: 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+}
+
+.project2-page .blend-story,
+.project2-page .masked-levels-panel {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+}
+
+.project2-page .blend-story-copy,
+.project2-page .masked-levels-copy {
+    position: static;
+    max-width: 760px;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+}
+
+.project2-page .oraple-story figure,
+.project2-page .masked-levels-figure {
+    max-width: 100%;
+    justify-self: center;
+}
+
+
 /* ------------------------------
    MOTION
 -------------------------------- */
@@ -1329,6 +1495,13 @@ footer {
         margin-right: -20px;
         margin-left: -20px;
         padding: 30px 20px;
+    }
+
+    .project2-page .case-study,
+    .project2-page .blend-story,
+    .project2-page .masked-levels-panel {
+        margin-right: 0;
+        margin-left: 0;
     }
 
     .blend-story-copy,
