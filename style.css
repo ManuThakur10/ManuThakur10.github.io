@@ -1310,6 +1310,516 @@ code {
 
 
 /* ------------------------------
+   PROJECT 3 - FLOW REPORT
+-------------------------------- */
+
+.project3-page .project-hero > .eyebrow,
+.project3-page .project-title,
+.project3-page .project-summary {
+    text-align: center;
+}
+
+.project3-page .project-title {
+    max-width: none;
+}
+
+.project3-page .project-summary {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.project3-page .project-fact,
+.project3-page .project-fact-value,
+.project3-page figure,
+.project3-page img {
+    min-width: 0;
+}
+
+.project3-page .project-fact-value {
+    overflow-wrap: anywhere;
+}
+
+.project3-page .project-section-header {
+    display: block;
+    max-width: 900px;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+}
+
+.project3-page .project-section-number {
+    display: block;
+    margin-bottom: 18px;
+}
+
+.project3-page .section-lede,
+.project3-page .project-section-text {
+    max-width: 780px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.project3-hero {
+    padding-bottom: 110px;
+}
+
+.project3-hero-grid {
+    margin-top: 70px;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.72fr);
+    gap: 16px;
+    align-items: end;
+}
+
+.project3-hero-grid figure {
+    min-width: 0;
+    margin: 0;
+    padding-top: 13px;
+    border-top: 1px solid var(--line);
+}
+
+.project3-hero-grid img {
+    width: 100%;
+    height: auto;
+    background: #fff;
+}
+
+.hero-hybrid-figure {
+    max-width: 520px;
+    justify-self: end;
+}
+
+.hero-flow-figure {
+    grid-column: 1 / -1;
+}
+
+.hero-flow-figure img {
+    max-height: 460px;
+    object-fit: contain;
+}
+
+.part-marker {
+    width: 100%;
+    max-width: 1180px;
+    margin: 30px auto 0;
+    padding: 24px 0;
+    border-top: 1px solid var(--text);
+    border-bottom: 1px solid var(--line);
+
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    align-items: baseline;
+}
+
+.part-marker span {
+    font-size: clamp(34px, 5vw, 70px);
+    font-weight: 500;
+    letter-spacing: -0.055em;
+    line-height: 1;
+}
+
+.part-marker p {
+    margin: 0;
+    color: var(--muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.experiment-block {
+    padding: 75px 0 20px;
+    border-top: 1px solid var(--line);
+}
+
+.experiment-block:first-of-type {
+    padding-top: 10px;
+    border-top: 0;
+}
+
+.experiment-copy {
+    max-width: 780px;
+    margin: 0 auto 45px;
+}
+
+.experiment-index {
+    display: block;
+    margin-bottom: 15px;
+
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.experiment-copy h3 {
+    margin: 0 0 17px;
+
+    font-size: clamp(29px, 4vw, 48px);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 1;
+}
+
+.experiment-copy p {
+    margin: 0;
+
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+.project3-page .equation-panel {
+    width: 100%;
+    max-width: 1080px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.project3-page .compact-equation {
+    margin-top: 0;
+}
+
+.flow-figure,
+.flow-triptych figure,
+.wide-figure-stack figure,
+.editorial-figure-stack figure,
+.sample-grid figure,
+.anagram-grid figure,
+.hybrid-views figure {
+    margin: 0;
+}
+
+.flow-figure,
+.wide-figure-stack,
+.editorial-figure-stack,
+.anagram-grid,
+.hybrid-grid {
+    width: 100%;
+    max-width: 1180px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.flow-figure img,
+.flow-triptych img,
+.wide-figure-stack img,
+.editorial-figure-stack img,
+.sample-grid img,
+.anagram-grid img,
+.hybrid-views img {
+    width: 100%;
+    height: auto;
+    background: #fff;
+}
+
+.flow-figure figcaption,
+.flow-triptych figcaption,
+.wide-figure-stack figcaption,
+.editorial-figure-stack figcaption,
+.sample-grid figcaption,
+.anagram-grid figcaption,
+.hybrid-views figcaption {
+    text-align: center;
+}
+
+.flow-triptych {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px 12px;
+}
+
+.wide-figure-stack,
+.editorial-figure-stack {
+    display: grid;
+    gap: 42px;
+}
+
+.editorial-figure-stack {
+    gap: 60px;
+}
+
+.metric-strip {
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto 48px;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+.metric-strip div {
+    padding: 22px;
+}
+
+.metric-strip div + div {
+    border-left: 1px solid var(--line);
+}
+
+.metric-strip span,
+.metric-strip strong {
+    display: block;
+}
+
+.metric-strip span {
+    margin-bottom: 10px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.metric-strip strong {
+    font-size: clamp(22px, 3vw, 34px);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+}
+
+.sample-grid {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.sample-grid figure {
+    min-width: 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+}
+
+.sample-grid img {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.anagram-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 34px 16px;
+}
+
+.hybrid-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.hybrid-card {
+    padding: 30px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+}
+
+.hybrid-card-copy {
+    margin-bottom: 28px;
+}
+
+.hybrid-card-copy h4 {
+    margin: 0 0 17px;
+
+    font-size: clamp(27px, 3vw, 39px);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+}
+
+.hybrid-card-copy p {
+    margin: 5px 0 0;
+
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.hybrid-card-copy strong {
+    color: var(--text);
+    font-weight: 500;
+}
+
+.hybrid-views {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 120px;
+    gap: 24px;
+    align-items: end;
+}
+
+.hybrid-views .distant-view img {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto;
+}
+
+.reflection-section .learning-lede {
+    margin-bottom: 55px;
+    padding: 28px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+}
+
+.reflection-section .learning-lede p {
+    margin: 0;
+}
+
+.partb-process {
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+.partb-process .process-step {
+    padding: 16px;
+    border-top: 1px solid var(--line);
+}
+
+.partb-process .process-step span,
+.partb-process .process-step strong,
+.partb-process .process-step small {
+    display: block;
+}
+
+.partb-process .process-step span {
+    margin-bottom: 18px;
+    color: var(--muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 10px;
+}
+
+.partb-process .process-step strong {
+    margin-bottom: 5px;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.partb-process .process-step small {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.partb-wide-figure,
+.partb-result-grid,
+.ood-grid,
+.observation-panel {
+    width: 100%;
+    max-width: 1180px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.partb-wide-figure,
+.partb-result-grid figure,
+.ood-grid figure {
+    margin: 0;
+}
+
+.partb-wide-figure img,
+.partb-result-grid img,
+.ood-grid img {
+    width: 100%;
+    height: auto;
+    background: #fff;
+}
+
+.partb-wide-figure figcaption,
+.partb-result-grid figcaption,
+.ood-grid figcaption {
+    text-align: center;
+}
+
+.partb-result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 42px 16px;
+}
+
+.partb-result-grid figure {
+    min-width: 0;
+    padding-top: 11px;
+    border-top: 1px solid var(--line);
+}
+
+.partb-result-grid .partb-chart {
+    align-self: start;
+}
+
+.partb-result-grid .partb-chart img,
+.partb-result-grid .mean-digit-figure img {
+    max-height: 340px;
+    object-fit: contain;
+}
+
+.ood-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 34px 16px;
+}
+
+.ood-grid figure {
+    min-width: 0;
+    padding-top: 11px;
+    border-top: 1px solid var(--line);
+}
+
+.ood-grid figure:last-child {
+    grid-column: 1 / -1;
+    width: calc(50% - 8px);
+    justify-self: center;
+}
+
+.scheduler-comparison {
+    grid-column: 1 / -1;
+    width: min(760px, 100%);
+    justify-self: center;
+}
+
+.observation-panel {
+    margin-top: 52px;
+    padding: 28px 30px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+}
+
+.observation-panel p {
+    max-width: 850px;
+    margin: 16px 0 0;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.75;
+}
+
+.project3-page .insight-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.project3-page .insight:nth-child(3n + 1) {
+    padding-left: 0;
+    border-left: 0;
+}
+
+.project3-page .insight:nth-child(n + 4) {
+    margin-top: 26px;
+    padding-top: 26px;
+    border-top: 1px solid var(--line);
+}
+
+.print-project-url {
+    display: none;
+}
+
+
+/* ------------------------------
    MOTION
 -------------------------------- */
 
@@ -1430,6 +1940,14 @@ footer {
 
 @media (max-width: 950px) {
 
+    .project3-hero-grid {
+        grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.75fr);
+    }
+
+    .sample-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
     .result-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -1455,6 +1973,15 @@ footer {
     footer {
         padding-left: 20px;
         padding-right: 20px;
+    }
+
+    .project3-page {
+        overflow-x: clip;
+    }
+
+    .project3-page .nav-links {
+        gap: 16px;
+        font-size: 12px;
     }
 
     .hero {
@@ -1492,6 +2019,87 @@ footer {
     .blend-story,
     .masked-levels-panel {
         grid-template-columns: 1fr;
+    }
+
+    .project3-hero-grid,
+    .flow-triptych,
+    .anagram-grid,
+    .hybrid-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .project3-hero-grid {
+        margin-top: 50px;
+    }
+
+    .hero-flow-figure {
+        grid-column: auto;
+    }
+
+    .part-marker {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .partb-result-grid,
+    .ood-grid,
+    .project3-page .insight-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ood-grid figure:last-child {
+        grid-column: auto;
+        width: 100%;
+    }
+
+    .observation-panel {
+        padding: 24px 20px;
+    }
+
+    .project3-page .insight + .insight {
+        margin-top: 22px;
+        padding-top: 22px;
+        padding-left: 0;
+        border-top: 1px solid var(--line);
+        border-left: 0;
+    }
+
+    .hero-hybrid-figure {
+        width: 100%;
+        max-width: none;
+        justify-self: stretch;
+    }
+
+    .experiment-block {
+        padding-top: 56px;
+    }
+
+    .sample-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metric-strip {
+        grid-template-columns: 1fr;
+    }
+
+    .metric-strip div + div {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+    }
+
+    .hybrid-card {
+        padding: 24px 20px;
+    }
+
+    .hybrid-views {
+        grid-template-columns: minmax(0, 1fr) 96px;
+        gap: 14px;
+    }
+
+    .hybrid-views .distant-view img {
+        width: 72px;
+        height: 72px;
     }
 
     .project2-hero-grid {
@@ -1713,5 +2321,44 @@ footer {
     .project2-page .blend-story-copy,
     .project2-page .masked-levels-copy {
         position: static;
+    }
+
+    .project3-page figure,
+    .project3-page .equation-panel,
+    .project3-page .metric-strip,
+    .project3-page .hybrid-card,
+    .project3-page .insight,
+    .project3-page .part-marker,
+    .project3-page .observation-panel {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .project3-page figure img {
+        max-height: 8.35in;
+        object-fit: contain;
+    }
+
+    .project3-page .sample-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .project3-page footer {
+        gap: 18px;
+    }
+
+    .project3-page .print-project-url {
+        position: fixed;
+        z-index: 1000;
+        bottom: -0.39in;
+        left: 50%;
+
+        display: block;
+        transform: translateX(-50%);
+
+        color: #171717;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 8px;
+        white-space: nowrap;
     }
 }
