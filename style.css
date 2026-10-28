@@ -2592,12 +2592,44 @@ footer {
         object-fit: contain;
     }
 
+    .project4-page .project4-matrix-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .project4-page .matrix-card {
+        padding: 18px 22px;
+    }
+
+    .project4-page .matrix-card pre {
+        margin-top: 12px;
+        overflow: visible;
+    }
+
+    .project4-page .project4-result {
+        break-before: page;
+        page-break-before: always;
+    }
+
+    .project4-page #reflection .insight-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .project4-page #reflection .insight:nth-child(n + 3) {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+    }
+
+    .project4-page #reflection .insight:nth-child(3) {
+        padding-left: 0;
+        border-left: 0;
+    }
+
     .project3-page footer {
         gap: 18px;
     }
 
-    .project3-page .print-project-url,
-    .project4-page .print-project-url {
+    .project3-page .print-project-url {
         position: fixed;
         z-index: 1000;
         bottom: -0.39in;
@@ -2610,5 +2642,9 @@ footer {
         font-family: Georgia, "Times New Roman", serif;
         font-size: 8px;
         white-space: nowrap;
+    }
+
+    .project4-page .print-project-url {
+        display: none;
     }
 }
