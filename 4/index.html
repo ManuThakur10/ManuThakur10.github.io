@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Project 4 | Image Warping and Mosaicing</title>
+    <meta
+        name="description"
+        content="CS 180 Project 4A: recovering homographies, implementing inverse warping, rectifying planar surfaces, and building feather-blended image mosaics."
+    >
+
+    <link rel="stylesheet" href="../style.css">
+    <script src="../motion.js" defer></script>
+</head>
+
+<body class="project4-page">
+
+    <div class="print-project-url" aria-hidden="true">https://manuthakur10.github.io/4/</div>
+
+    <nav class="nav">
+        <a class="nav-logo" href="../index.html" aria-label="Back to portfolio home">MT</a>
+
+        <div class="nav-links">
+            <a href="#homographies">Homographies</a>
+            <a href="#rectification">Rectification</a>
+            <a href="#mosaics">Mosaics</a>
+        </div>
+    </nav>
+
+
+    <main>
+
+        <section class="project-hero project4-hero">
+            <p class="eyebrow">Project 04 &middot; Part A &middot; Fall 2026</p>
+
+            <h1 class="project-title">Warping<br>Space</h1>
+
+            <p class="project-summary">
+                Recovering projective geometry from hand-picked correspondences,
+                looking straight at surfaces photographed obliquely, and stitching
+                overlapping views into one continuous field of view.
+            </p>
+
+            <div class="project-facts" aria-label="Project summary">
+                <div class="project-fact">
+                    <span class="project-fact-label">Correspondences</span>
+                    <span class="project-fact-value">8 manual pairs per mosaic</span>
+                </div>
+                <div class="project-fact">
+                    <span class="project-fact-label">Geometry</span>
+                    <span class="project-fact-value">Normalized least-squares homography</span>
+                </div>
+                <div class="project-fact">
+                    <span class="project-fact-label">Resampling</span>
+                    <span class="project-fact-value">Nearest + bilinear inverse warps</span>
+                </div>
+                <div class="project-fact">
+                    <span class="project-fact-label">Compositing</span>
+                    <span class="project-fact-value">Mask-aware distance feathering</span>
+                </div>
+            </div>
+
+            <figure class="report-figure project4-hero-figure">
+                <img
+                    src="./media/kitchen-mosaic.webp"
+                    alt="Wide projectively warped mosaic of a kitchen counter, sink, stove, and cabinets"
+                    width="2395"
+                    height="1590"
+                    loading="eager"
+                >
+                <figcaption>Kitchen panorama &middot; two handheld views, one projective canvas</figcaption>
+            </figure>
+        </section>
+
+
+        <section id="capture" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">01</span>
+                <h2>Photographing<br>for Overlap</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    I photographed three scenes in overlapping pairs, rotating the camera
+                    from approximately one viewpoint instead of translating it. Each pair
+                    preserves enough shared structure to identify the same physical landmarks
+                    in both images.
+                </p>
+                <p>
+                    The bedroom is dominated by a rigid bed frame, the bicycle area mixes
+                    several depths, and the kitchen offers long horizontal cabinet and counter
+                    edges. Together they expose both the strengths and limitations of a single
+                    planar projective model.
+                </p>
+            </div>
+
+            <div class="project4-source-stack">
+                <article class="case-study project4-source-case">
+                    <div class="case-study-intro">
+                        <h3>Bedroom</h3>
+                        <p>
+                            Repeated frame intersections and drawer corners provide stable
+                            landmarks throughout the overlap.
+                        </p>
+                    </div>
+                    <div class="image-grid">
+                        <figure>
+                            <img src="./media/bedroom-reference.webp" alt="Reference photograph of a bunk bed and bedroom" width="1250" height="938" loading="lazy">
+                            <figcaption>Reference view</figcaption>
+                        </figure>
+                        <figure>
+                            <img src="./media/bedroom-other.webp" alt="Overlapping photograph extending the bedroom view to the right" width="1250" height="938" loading="lazy">
+                            <figcaption>Overlapping view</figcaption>
+                        </figure>
+                    </div>
+                </article>
+
+                <article class="case-study project4-source-case">
+                    <div class="case-study-intro">
+                        <h3>Bicycle alcove</h3>
+                        <p>
+                            Wall seams and fixed structural details anchor the alignment;
+                            nearby bicycles reveal foreground parallax.
+                        </p>
+                    </div>
+                    <div class="image-grid">
+                        <figure>
+                            <img src="./media/bikes-reference.webp" alt="Reference photograph of bicycles beside a paneled wall and corridor" width="1250" height="938" loading="lazy">
+                            <figcaption>Reference view</figcaption>
+                        </figure>
+                        <figure>
+                            <img src="./media/bikes-other.webp" alt="Overlapping photograph of bicycles, stairs, and the same paneled wall" width="1250" height="938" loading="lazy">
+                            <figcaption>Overlapping view</figcaption>
+                        </figure>
+                    </div>
+                </article>
+
+                <article class="case-study project4-source-case">
+                    <div class="case-study-intro">
+                        <h3>Kitchen</h3>
+                        <p>
+                            Cabinet seams, the counter edge, and fixed appliance features
+                            distribute correspondences across the shared view.
+                        </p>
+                    </div>
+                    <div class="image-grid">
+                        <figure>
+                            <img src="./media/kitchen-reference.webp" alt="Reference photograph of a kitchen sink, counter, and stove" width="1250" height="938" loading="lazy">
+                            <figcaption>Reference view</figcaption>
+                        </figure>
+                        <figure>
+                            <img src="./media/kitchen-other.webp" alt="Overlapping photograph of the kitchen stove, microwave, and counter" width="1250" height="938" loading="lazy">
+                            <figcaption>Overlapping view</figcaption>
+                        </figure>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+
+        <section id="homographies" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">02</span>
+                <h2>Recovering<br>Homographies</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    A homography maps a source point to a destination point in homogeneous
+                    coordinates. Fixing <code>h<sub>33</sub> = 1</code> leaves eight unknowns.
+                    Every correspondence contributes two linear equations, so eight matches
+                    form an overdetermined system that I solve with NumPy least squares.
+                </p>
+                <p>
+                    Before solving, I apply Hartley normalization: translate each point set
+                    to zero mean and scale its average distance from the origin to
+                    <code>&radic;2</code>. I then denormalize the fitted matrix. This improves
+                    conditioning without changing the projective mapping.
+                </p>
+            </div>
+
+            <div class="equation-panel">
+                <div class="equation">p&prime; &sim; Hp</div>
+                <p class="equation-note">
+                    The final coordinate is obtained by dividing the first two homogeneous
+                    components by the third. In each mosaic, <code>H</code> maps the second
+                    photograph into the unchanged reference photograph.
+                </p>
+            </div>
+
+            <div class="equation-panel project4-linear-system">
+                <div class="equation">
+                    <span>xh<sub>11</sub> + yh<sub>12</sub> + h<sub>13</sub> - ux h<sub>31</sub> - uy h<sub>32</sub> = u</span>
+                    <span>xh<sub>21</sub> + yh<sub>22</sub> + h<sub>23</sub> - vx h<sub>31</sub> - vy h<sub>32</sub> = v</span>
+                </div>
+                <p class="equation-note">
+                    Stacking these two rows for every <code>(x, y) &rarr; (u, v)</code>
+                    match gives <code>Ah = b</code>. Well-spread, non-collinear points make
+                    the fit substantially more stable.
+                </p>
+            </div>
+
+            <div class="project4-correspondence-stack">
+                <figure class="report-figure">
+                    <img src="./media/bedroom-correspondences.webp" alt="Eight numbered matching points across the two bedroom photographs" width="1785" height="738" loading="lazy">
+                    <figcaption>Bedroom &middot; 8 matches &middot; mean reprojection residual 1.88 px</figcaption>
+                </figure>
+                <figure class="report-figure">
+                    <img src="./media/bikes-correspondences.webp" alt="Eight numbered matching points across the two bicycle-area photographs" width="1785" height="738" loading="lazy">
+                    <figcaption>Bicycle alcove &middot; 8 matches &middot; mean reprojection residual 3.23 px</figcaption>
+                </figure>
+                <figure class="report-figure">
+                    <img src="./media/kitchen-correspondences.webp" alt="Eight numbered matching points across the two kitchen photographs" width="1785" height="738" loading="lazy">
+                    <figcaption>Kitchen &middot; 8 matches &middot; mean reprojection residual 3.05 px</figcaption>
+                </figure>
+            </div>
+
+            <div class="project4-matrix-grid" aria-label="Recovered homography matrices">
+                <article class="matrix-card">
+                    <span class="matrix-label">Bedroom H</span>
+                    <pre><code>[[ 0.3853 -0.0333  522.4329]
+ [-0.1986  0.7898   87.2100]
+ [-0.0005 -0.0000    1.0000]]</code></pre>
+                </article>
+                <article class="matrix-card">
+                    <span class="matrix-label">Bicycle alcove H</span>
+                    <pre><code>[[ 2.7862  0.0641 -1852.0046]
+ [ 0.5413  2.3993  -550.7210]
+ [ 0.0014  0.0001     1.0000]]</code></pre>
+                </article>
+                <article class="matrix-card">
+                    <span class="matrix-label">Kitchen H</span>
+                    <pre><code>[[ 0.5030 -0.0056  537.5800]
+ [-0.1568  0.8589   78.1193]
+ [-0.0004  0.0000    1.0000]]</code></pre>
+                </article>
+            </div>
+        </section>
+
+
+        <section id="rectification" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">03</span>
+                <h2>Inverse Warping<br>&amp; Rectification</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    Forward mapping can leave holes because transformed source pixels do not
+                    necessarily land on integer destination coordinates. Instead, I enumerate
+                    every destination pixel, apply <code>H<sup>-1</sup></code>, and sample the
+                    resulting floating-point location in the source image.
+                </p>
+                <p>
+                    For rectification, four photographed corners map to a rectangle with the
+                    physical surface's aspect ratio. The laptop result is especially revealing:
+                    after rectification, text captured at an angle becomes directly readable.
+                </p>
+            </div>
+
+            <div class="equation-panel">
+                <div class="equation">p<sub>source</sub> &sim; H<sup>-1</sup>p<sub>destination</sub></div>
+                <p class="equation-note">
+                    A validity mask rejects samples outside the source image. Nearest-neighbor
+                    rounds to one pixel; bilinear interpolation blends the surrounding four
+                    pixels using their fractional x and y distances.
+                </p>
+            </div>
+
+            <div class="project4-rectification-stack">
+                <figure class="report-figure">
+                    <img src="./media/rect-artwork.webp" alt="Angled artwork followed by nearest-neighbor and bilinear rectifications" width="1607" height="624" loading="lazy">
+                    <figcaption>Artwork rectification &middot; target aspect ratio 4:5</figcaption>
+                </figure>
+                <figure class="report-figure">
+                    <img src="./media/rect-laptop.webp" alt="Angled laptop display followed by readable nearest-neighbor and bilinear rectifications" width="1805" height="569" loading="lazy">
+                    <figcaption>Laptop display rectification &middot; target aspect ratio 16:10</figcaption>
+                </figure>
+            </div>
+
+            <div class="insight-grid project4-interpolation-notes">
+                <article class="insight">
+                    <h3>Nearest neighbor</h3>
+                    <p>Preserves exact source values, but diagonal edges and small text can look jagged.</p>
+                </article>
+                <article class="insight">
+                    <h3>Bilinear</h3>
+                    <p>Uses four weighted samples for smoother edges, with a small amount of interpolation blur.</p>
+                </article>
+                <article class="insight">
+                    <h3>Validity mask</h3>
+                    <p>Keeps out-of-bounds samples from contributing to either rectified images or mosaics.</p>
+                </article>
+            </div>
+        </section>
+
+
+        <section id="mosaics" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">04</span>
+                <h2>Feather-Blended<br>Mosaics</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    I keep the reference image in its original coordinate system, project the
+                    second image into that system, and compute a canvas large enough to contain
+                    both. In their overlap, each image receives a weight equal to its distance
+                    from the nearest validity-mask boundary; normalizing the two weights creates
+                    a gradual transition instead of a hard seam.
+                </p>
+                <p>
+                    The angled outer boundaries are the honest footprint of projective warping.
+                    Black regions are uncovered canvas, not missing image data.
+                </p>
+            </div>
+
+            <div class="equation-panel">
+                <div class="equation">I = (w<sub>a</sub>I<sub>a</sub> + w<sub>b</sub>I<sub>b</sub>) / (w<sub>a</sub> + w<sub>b</sub>)</div>
+                <p class="equation-note">
+                    Distance-transform weights are largest inside each image and taper toward
+                    its boundary. The blend softens exposure differences while preserving all
+                    valid pixels covered by either view.
+                </p>
+            </div>
+
+            <article class="project4-result">
+                <div class="project4-result-copy">
+                    <span class="result-kicker">Mosaic 01 &middot; 1.88 px residual</span>
+                    <h3>Bedroom</h3>
+                    <p>
+                        Rigid bed-frame and drawer landmarks produce the tightest fit of the
+                        three scenes. Feathering makes the handoff across the bed and wall
+                        difficult to locate at normal viewing size.
+                    </p>
+                </div>
+                <figure class="report-figure">
+                    <img src="./media/bedroom-mosaic.webp" alt="Feather-blended bedroom panorama" width="2514" height="1868" loading="lazy">
+                    <figcaption>Reference image held fixed; right view warped into its projection.</figcaption>
+                </figure>
+            </article>
+
+            <article class="project4-result">
+                <div class="project4-result-copy">
+                    <span class="result-kicker">Mosaic 02 &middot; 3.23 px residual</span>
+                    <h3>Bicycle alcove</h3>
+                    <p>
+                        The wall and architectural structure align well, while nearby bicycles
+                        retain some doubling. Their depth changes relative to the background
+                        when the handheld viewpoint shifts, violating the single-homography model.
+                    </p>
+                </div>
+                <figure class="report-figure">
+                    <img src="./media/bikes-mosaic.webp" alt="Feather-blended panorama of bicycles, stairs, wall, and corridor" width="3103" height="2138" loading="lazy">
+                    <figcaption>A useful failure case: foreground parallax survives an accurate background fit.</figcaption>
+                </figure>
+            </article>
+
+            <article class="project4-result">
+                <div class="project4-result-copy">
+                    <span class="result-kicker">Mosaic 03 &middot; 3.05 px residual</span>
+                    <h3>Kitchen</h3>
+                    <p>
+                        Cabinet seams and the counter form a stable shared structure across the
+                        pair. The resulting mosaic nearly doubles the horizontal field of view
+                        while keeping the microwave, stove, and counter continuous.
+                    </p>
+                </div>
+                <figure class="report-figure">
+                    <img src="./media/kitchen-mosaic.webp" alt="Feather-blended kitchen panorama" width="2395" height="1590" loading="lazy">
+                    <figcaption>Dark cabinetry makes even small geometric or exposure seams easy to inspect.</figcaption>
+                </figure>
+            </article>
+        </section>
+
+
+        <section id="reflection" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">05</span>
+                <h2>What I<br>Learned</h2>
+            </div>
+
+            <div class="insight-grid">
+                <article class="insight">
+                    <h3>Clicks become geometry</h3>
+                    <p>A few pixels of correspondence error can noticeably move an entire projected image.</p>
+                </article>
+                <article class="insight">
+                    <h3>Invert the mapping</h3>
+                    <p>Asking where every destination pixel came from avoids the holes created by forward splatting.</p>
+                </article>
+                <article class="insight">
+                    <h3>Masks make blending honest</h3>
+                    <p>Distance weights work only when invalid warped pixels are excluded explicitly.</p>
+                </article>
+                <article class="insight">
+                    <h3>Parallax is not a bad homography</h3>
+                    <p>One projective transform cannot perfectly align a translated camera view containing many depths.</p>
+                </article>
+            </div>
+        </section>
+
+    </main>
+
+
+    <footer>
+        <span>Manu Thakur</span>
+        <span>Berkeley CS 180 &middot; 2026</span>
+    </footer>
+
+</body>
+</html>

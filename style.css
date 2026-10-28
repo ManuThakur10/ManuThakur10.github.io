@@ -1814,6 +1814,218 @@ code {
     border-top: 1px solid var(--line);
 }
 
+
+/* ------------------------------
+   PROJECT 4 — HOMOGRAPHY REPORT
+-------------------------------- */
+
+.project4-page {
+    overflow-x: clip;
+}
+
+.project4-hero {
+    padding-bottom: 110px;
+}
+
+.project4-page .project-hero > .eyebrow,
+.project4-page .project-title,
+.project4-page .project-summary {
+    text-align: center;
+}
+
+.project4-page .project-title {
+    max-width: none;
+}
+
+.project4-page .project-summary {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.project4-hero-figure {
+    width: 100%;
+    max-width: 1180px;
+    margin: 70px auto 0;
+    padding-top: 13px;
+    border-top: 1px solid var(--line);
+}
+
+.project4-hero-figure img,
+.project4-result img {
+    width: 100%;
+    height: auto;
+    background: #090909;
+}
+
+.project4-page .project-section-header {
+    display: block;
+    max-width: 900px;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+}
+
+.project4-page .project-section-number {
+    display: block;
+    margin-bottom: 18px;
+}
+
+.project4-page .section-lede,
+.project4-page .project-section-text {
+    max-width: 780px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.project4-page .equation-panel {
+    width: 100%;
+    max-width: 1080px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.project4-source-stack {
+    display: grid;
+    gap: 24px;
+}
+
+.project4-source-case {
+    margin: 0;
+}
+
+.project4-source-case .image-grid img {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+.project4-linear-system .equation {
+    display: grid;
+    gap: 14px;
+
+    font-size: clamp(16px, 2vw, 25px);
+    line-height: 1.45;
+    white-space: normal;
+}
+
+.project4-correspondence-stack,
+.project4-rectification-stack {
+    width: 100%;
+    max-width: 1180px;
+    margin: 65px auto 0;
+
+    display: grid;
+    gap: 48px;
+}
+
+.project4-correspondence-stack .report-figure,
+.project4-rectification-stack .report-figure {
+    margin: 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+}
+
+.project4-correspondence-stack img,
+.project4-rectification-stack img {
+    width: 100%;
+    height: auto;
+    background: #fff;
+}
+
+.project4-matrix-grid {
+    width: 100%;
+    max-width: 1180px;
+    margin: 55px auto 0;
+
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+
+    border: 1px solid var(--line);
+    background: var(--line);
+}
+
+.matrix-card {
+    min-width: 0;
+    padding: 24px;
+    background: var(--surface);
+}
+
+.matrix-label,
+.result-kicker {
+    display: block;
+
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.matrix-card pre {
+    margin: 20px 0 0;
+    overflow-x: auto;
+
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.matrix-card code {
+    font-size: inherit;
+}
+
+.project4-interpolation-notes {
+    max-width: 1080px;
+    margin: 58px auto 0;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.project4-result {
+    width: 100%;
+    max-width: 1180px;
+    margin: 82px auto 0;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+}
+
+.project4-result-copy {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.3fr);
+    column-gap: 75px;
+    align-items: start;
+}
+
+.project4-result-copy .result-kicker {
+    grid-column: 1;
+}
+
+.project4-result-copy h3 {
+    grid-column: 1;
+    margin: 14px 0 0;
+
+    font-size: clamp(34px, 4.5vw, 62px);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 0.98;
+}
+
+.project4-result-copy p {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    margin: 0;
+
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.project4-result figure {
+    margin: 38px 0 0;
+}
+
+.project4-page #reflection .insight-grid {
+    margin-top: 15px;
+}
+
 .print-project-url {
     display: none;
 }
@@ -2219,6 +2431,27 @@ footer {
         border-top: 1px solid var(--line);
         border-left: 0;
     }
+
+    .project4-page .nav-links {
+        gap: 14px;
+        font-size: 12px;
+    }
+
+    .project4-hero-figure {
+        margin-top: 50px;
+    }
+
+    .project4-matrix-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .project4-result-copy {
+        display: block;
+    }
+
+    .project4-result-copy p {
+        margin-top: 24px;
+    }
 }
 
 
@@ -2343,11 +2576,28 @@ footer {
         grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
+    .project4-page figure,
+    .project4-page .equation-panel,
+    .project4-page .matrix-card,
+    .project4-page .insight,
+    .project4-page .project4-result-copy {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .project4-page figure img {
+        width: auto !important;
+        max-width: 100% !important;
+        max-height: 8.1in !important;
+        object-fit: contain;
+    }
+
     .project3-page footer {
         gap: 18px;
     }
 
-    .project3-page .print-project-url {
+    .project3-page .print-project-url,
+    .project4-page .print-project-url {
         position: fixed;
         z-index: 1000;
         bottom: -0.39in;
