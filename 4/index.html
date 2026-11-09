@@ -7,10 +7,10 @@
     <title>Project 4 | Image Warping and Mosaicing</title>
     <meta
         name="description"
-        content="CS 180 Project 4A: recovering homographies, implementing inverse warping, rectifying planar surfaces, and building feather-blended image mosaics."
+        content="CS 180 Project 4: manual image warping and mosaicing followed by Harris corners, ANMS, feature matching, RANSAC, and automatic stitching."
     >
 
-    <link rel="stylesheet" href="../style.css?v=5d11885">
+    <link rel="stylesheet" href="../style.css?v=project4b">
     <script src="../motion.js" defer></script>
 </head>
 
@@ -22,9 +22,9 @@
         <a class="nav-logo" href="../index.html" aria-label="Back to portfolio home">MT</a>
 
         <div class="nav-links">
-            <a href="#homographies">Homographies</a>
-            <a href="#rectification">Rectification</a>
-            <a href="#mosaics">Mosaics</a>
+            <a href="#capture">Part A</a>
+            <a href="#automatic-stitching">Part B</a>
+            <a href="#automatic-mosaics">Results</a>
         </div>
     </nav>
 
@@ -32,32 +32,32 @@
     <main>
 
         <section class="project-hero project4-hero">
-            <p class="eyebrow">Project 04 &middot; Part A &middot; Fall 2026</p>
+            <p class="eyebrow">Project 04 &middot; Parts A + B &middot; Fall 2026</p>
 
             <h1 class="project-title">Warping<br>Space</h1>
 
             <p class="project-summary">
                 Recovering projective geometry from hand-picked correspondences,
-                looking straight at surfaces photographed obliquely, and stitching
-                overlapping views into one continuous field of view.
+                then teaching the pipeline to find, match, and robustly filter its
+                own features before stitching each scene automatically.
             </p>
 
             <div class="project-facts" aria-label="Project summary">
                 <div class="project-fact">
                     <span class="project-fact-label">Correspondences</span>
-                    <span class="project-fact-value">8 manual pairs per mosaic</span>
+                    <span class="project-fact-value">Manual + automatic</span>
                 </div>
                 <div class="project-fact">
                     <span class="project-fact-label">Geometry</span>
-                    <span class="project-fact-value">Normalized least-squares homography</span>
+                    <span class="project-fact-value">Least squares + 4-point RANSAC</span>
                 </div>
                 <div class="project-fact">
-                    <span class="project-fact-label">Resampling</span>
-                    <span class="project-fact-value">Nearest + bilinear inverse warps</span>
+                    <span class="project-fact-label">Features</span>
+                    <span class="project-fact-value">Harris · ANMS · 8×8 patches</span>
                 </div>
                 <div class="project-fact">
                     <span class="project-fact-label">Compositing</span>
-                    <span class="project-fact-value">Mask-aware distance feathering</span>
+                    <span class="project-fact-value">Bilinear warp + distance feathering</span>
                 </div>
             </div>
 
@@ -375,9 +375,354 @@
         </section>
 
 
-        <section id="reflection" class="project-section">
+        <section id="automatic-stitching" class="project-section p4b-intro-section">
+            <div class="p4b-part-card">
+                <div>
+                    <span class="p4b-part-label">Part B</span>
+                    <h2>From clicks<br>to features</h2>
+                </div>
+                <div class="p4b-part-copy">
+                    <p>
+                        Part A established the geometry; Part B removes the manual point picker.
+                        Following the simplified MOPS pipeline, each image now proposes its own
+                        corners, describes them locally, matches them across the pair, and lets
+                        RANSAC decide which correspondences agree on one projective model.
+                    </p>
+                    <p>
+                        I reused the same three photo pairs and the same inverse warp and
+                        feathering code. That isolates the real experiment: changing only how
+                        the homography correspondences are obtained.
+                    </p>
+                </div>
+            </div>
+
+            <div class="p4b-flow" aria-label="Automatic stitching pipeline">
+                <article>
+                    <span>01</span>
+                    <h3>Detect</h3>
+                    <p>Harris responses at one scale.</p>
+                </article>
+                <article>
+                    <span>02</span>
+                    <h3>Describe</h3>
+                    <p>Normalized 8×8 appearance patches.</p>
+                </article>
+                <article>
+                    <span>03</span>
+                    <h3>Match</h3>
+                    <p>Lowe first-to-second neighbor ratio.</p>
+                </article>
+                <article>
+                    <span>04</span>
+                    <h3>Verify</h3>
+                    <p>Four-point RANSAC and inlier refit.</p>
+                </article>
+            </div>
+        </section>
+
+
+        <section id="corner-detection" class="project-section">
             <div class="project-section-header">
                 <span class="project-section-number">05</span>
+                <h2>Harris Corners<br>&amp; ANMS</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    I begin with the provided single-scale Harris detector and retain local
+                    response maxima outside a 24-pixel border. This produces tens of thousands
+                    of candidates—dense around texture, but too clustered to form a stable,
+                    efficient matching set.
+                </p>
+                <p>
+                    Adaptive Non-Maximal Suppression assigns each candidate the distance to its
+                    nearest substantially stronger neighbor. Keeping the 500 largest radii
+                    spreads points across the full frame while preserving locally distinctive
+                    structure. I use <code>c<sub>robust</sub> = 0.9</code>.
+                </p>
+            </div>
+
+            <div class="equation-panel">
+                <div class="equation">r<sub>i</sub> = min ||x<sub>i</sub> - x<sub>j</sub>||</div>
+                <p class="equation-note">
+                    The minimum considers points with
+                    <code>f(x<sub>j</sub>) &gt; f(x<sub>i</sub>) / 0.9</code>.
+                    Large radii identify strong corners that are not crowded by an even
+                    stronger response.
+                </p>
+            </div>
+
+            <figure class="report-figure p4b-wide-figure">
+                <img
+                    src="./media/bedroom-auto-corners.webp"
+                    alt="Bedroom reference image with dense Harris corner candidates beside 500 spatially distributed ANMS points"
+                    width="2337"
+                    height="941"
+                    loading="lazy"
+                >
+                <figcaption>Bedroom reference &middot; 30,258 Harris maxima reduced to 500 ANMS points</figcaption>
+            </figure>
+        </section>
+
+
+        <section id="feature-descriptors" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">06</span>
+                <h2>Local Appearance<br>in 64 Numbers</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    Around every ANMS point, I extract an axis-aligned 40×40 grayscale window.
+                    After a Gaussian blur, averaging each 5×5 cell reduces the neighborhood to
+                    an 8×8 descriptor. Sampling a broad window makes the representation less
+                    sensitive to one-pixel shifts than an unblurred 8×8 crop.
+                </p>
+                <p>
+                    Each 64-value vector is bias/gain normalized to zero mean and unit standard
+                    deviation. The descriptor therefore emphasizes the local intensity pattern
+                    instead of absolute exposure.
+                </p>
+            </div>
+
+            <div class="equation-panel">
+                <div class="equation">d = (p - &mu;<sub>p</sub>) / &sigma;<sub>p</sub></div>
+                <p class="equation-note">
+                    The course simplification uses axis-aligned descriptors, so this stage is
+                    not rotation invariant. Every retained point still has a complete 40×40
+                    support window because corners near the image boundary were removed first.
+                </p>
+            </div>
+
+            <figure class="report-figure p4b-descriptor-figure">
+                <img
+                    src="./media/bedroom-auto-descriptors.webp"
+                    alt="Eight numbered 40 by 40 source neighborhoods and their normalized 8 by 8 grayscale feature descriptors"
+                    width="1878"
+                    height="971"
+                    loading="lazy"
+                >
+                <figcaption>Eight example neighborhoods and the normalized 8×8 descriptors used for matching</figcaption>
+            </figure>
+        </section>
+
+
+        <section id="feature-matching" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">07</span>
+                <h2>Matching by<br>Distinctiveness</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    I compute every pairwise descriptor distance. A proposed match survives when
+                    its closest neighbor is much better than its second-closest neighbor:
+                    <code>d<sub>1</sub> / d<sub>2</sub> &lt; 0.80</code>. This is Lowe's ratio test;
+                    it rejects ambiguous patches such as repeated cabinet or bed-frame edges.
+                </p>
+                <p>
+                    I also require mutual nearest neighbors. The remaining lines are plausible
+                    appearance matches, not yet geometric truth—several outliers are still
+                    visible, which is exactly what RANSAC must handle next.
+                </p>
+            </div>
+
+            <div class="p4b-match-stack">
+                <article class="p4b-match-case">
+                    <div class="p4b-match-copy">
+                        <span class="result-kicker">Bedroom</span>
+                        <h3>137 tentative matches</h3>
+                        <p>Rigid bed-frame edges and textiles yield the densest, cleanest appearance agreement.</p>
+                    </div>
+                    <figure class="report-figure">
+                        <img src="./media/bedroom-auto-tentative.webp" alt="Tentative automatic feature matches between the two bedroom photographs" width="2532" height="1007" loading="lazy">
+                        <figcaption>Lowe ratio + mutual nearest-neighbor filtering</figcaption>
+                    </figure>
+                </article>
+
+                <article class="p4b-match-case">
+                    <div class="p4b-match-copy">
+                        <span class="result-kicker">Bicycle alcove</span>
+                        <h3>77 tentative matches</h3>
+                        <p>Repeated bicycle geometry and foreground depth make this the most ambiguous pair.</p>
+                    </div>
+                    <figure class="report-figure">
+                        <img src="./media/bikes-auto-tentative.webp" alt="Tentative automatic feature matches between the two bicycle-area photographs" width="2532" height="1007" loading="lazy">
+                        <figcaption>Appearance filtering retains both good matches and geometric outliers</figcaption>
+                    </figure>
+                </article>
+
+                <article class="p4b-match-case">
+                    <div class="p4b-match-copy">
+                        <span class="result-kicker">Kitchen</span>
+                        <h3>106 tentative matches</h3>
+                        <p>Counter objects and appliance boundaries provide many distinctive local patches.</p>
+                    </div>
+                    <figure class="report-figure">
+                        <img src="./media/kitchen-auto-tentative.webp" alt="Tentative automatic feature matches between the two kitchen photographs" width="2532" height="1007" loading="lazy">
+                        <figcaption>Most lines agree, but matching alone does not enforce a homography</figcaption>
+                    </figure>
+                </article>
+            </div>
+        </section>
+
+
+        <section id="ransac" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">08</span>
+                <h2>Four Points,<br>Five Thousand Times</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    My RANSAC implementation repeatedly samples four non-degenerate matches,
+                    fits a homography with the Part A solver, and measures every tentative
+                    match's reprojection error. A match is an inlier when its projected point
+                    lands within 5 pixels of the observed destination.
+                </p>
+                <p>
+                    After 5,000 trials, I keep the largest consensus set and recompute the
+                    homography from all of its inliers using normalized least squares. This
+                    final refit is much less sensitive to any one correspondence than the
+                    four-point proposal that discovered the set.
+                </p>
+            </div>
+
+            <div class="p4b-ransac-steps">
+                <article><span>1</span><p>Sample four matches without replacement.</p></article>
+                <article><span>2</span><p>Reject nearly collinear samples and solve for H.</p></article>
+                <article><span>3</span><p>Count reprojection errors at or below 5 px.</p></article>
+                <article><span>4</span><p>Refit H using every inlier in the best consensus.</p></article>
+            </div>
+
+            <div class="p4b-metrics" aria-label="RANSAC results">
+                <article>
+                    <span class="result-kicker">Bedroom</span>
+                    <strong>122 / 137</strong>
+                    <p>89.1% inliers · 1.51 px median error</p>
+                </article>
+                <article>
+                    <span class="result-kicker">Bicycle alcove</span>
+                    <strong>59 / 77</strong>
+                    <p>76.6% inliers · 2.13 px median error</p>
+                </article>
+                <article>
+                    <span class="result-kicker">Kitchen</span>
+                    <strong>79 / 106</strong>
+                    <p>74.5% inliers · 1.25 px median error</p>
+                </article>
+            </div>
+
+            <div class="p4b-match-stack p4b-ransac-stack">
+                <figure class="report-figure">
+                    <img src="./media/bedroom-auto-ransac.webp" alt="Bedroom feature matches retained as RANSAC inliers" width="2532" height="1007" loading="lazy">
+                    <figcaption>Bedroom &middot; 122-match consensus after geometric verification</figcaption>
+                </figure>
+                <figure class="report-figure">
+                    <img src="./media/bikes-auto-ransac.webp" alt="Bicycle-area feature matches retained as RANSAC inliers" width="2532" height="1007" loading="lazy">
+                    <figcaption>Bicycle alcove &middot; background and structural features dominate the consensus</figcaption>
+                </figure>
+                <figure class="report-figure">
+                    <img src="./media/kitchen-auto-ransac.webp" alt="Kitchen feature matches retained as RANSAC inliers" width="2532" height="1007" loading="lazy">
+                    <figcaption>Kitchen &middot; 79 matches support one projective alignment</figcaption>
+                </figure>
+            </div>
+        </section>
+
+
+        <section id="automatic-mosaics" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">09</span>
+                <h2>Manual vs.<br>Automatic</h2>
+            </div>
+
+            <div class="section-lede">
+                <p>
+                    Both columns below use exactly the same bilinear inverse warp, canvas bounds,
+                    validity masks, and distance-transform feathering. The left homographies come
+                    from my eight hand-picked Part A pairs; the right homographies come entirely
+                    from Harris, ANMS, descriptors, ratio matching, and RANSAC.
+                </p>
+                <p>
+                    All three automatic results recover the same scene geometry as their manual
+                    counterparts. The bicycle scene retains foreground doubling in both versions,
+                    confirming that its main limitation is parallax rather than correspondence
+                    selection.
+                </p>
+            </div>
+
+            <article class="project4-result p4b-result">
+                <div class="project4-result-copy">
+                    <span class="result-kicker">Automatic fit · 122 inliers</span>
+                    <h3>Bedroom</h3>
+                    <p>
+                        The automatic alignment follows the same rigid bed and wall structure as
+                        the manual fit. Dense consensus support makes the small difference in
+                        outer projective bounds more noticeable than the seam itself.
+                    </p>
+                </div>
+                <div class="p4b-mosaic-pair">
+                    <figure class="report-figure">
+                        <img src="./media/bedroom-mosaic.webp" alt="Bedroom panorama made from manual correspondences" width="2514" height="1868" loading="lazy">
+                        <figcaption>Part A &middot; manual correspondences</figcaption>
+                    </figure>
+                    <figure class="report-figure">
+                        <img src="./media/bedroom-auto-mosaic.webp" alt="Bedroom panorama made from automatic feature matching and RANSAC" width="2521" height="1839" loading="lazy">
+                        <figcaption>Part B &middot; automatic features + RANSAC</figcaption>
+                    </figure>
+                </div>
+            </article>
+
+            <article class="project4-result p4b-result">
+                <div class="project4-result-copy">
+                    <span class="result-kicker">Automatic fit · 59 inliers</span>
+                    <h3>Bicycle alcove</h3>
+                    <p>
+                        Both methods align the walls, stairs, and corridor while leaving some
+                        bicycle doubling. RANSAC correctly finds the dominant background model;
+                        one homography still cannot reconcile every foreground depth.
+                    </p>
+                </div>
+                <div class="p4b-mosaic-pair">
+                    <figure class="report-figure">
+                        <img src="./media/bikes-mosaic.webp" alt="Bicycle-area panorama made from manual correspondences" width="3103" height="2138" loading="lazy">
+                        <figcaption>Part A &middot; manual correspondences</figcaption>
+                    </figure>
+                    <figure class="report-figure">
+                        <img src="./media/bikes-auto-mosaic.webp" alt="Bicycle-area panorama made from automatic feature matching and RANSAC" width="2970" height="1962" loading="lazy">
+                        <figcaption>Part B &middot; automatic features + RANSAC</figcaption>
+                    </figure>
+                </div>
+            </article>
+
+            <div class="p4b-print-page-pad" aria-hidden="true"></div>
+            <article class="project4-result p4b-result p4b-result-kitchen">
+                <div class="project4-result-copy">
+                    <span class="result-kicker">Automatic fit · 79 inliers</span>
+                    <h3>Kitchen</h3>
+                    <p>
+                        The cabinet and countertop features produce a smooth automatic panorama
+                        with the same continuous appliance geometry as the hand-selected result.
+                        Its 1.25 px median inlier error is the lowest automatic residual of the set.
+                    </p>
+                </div>
+                <div class="p4b-mosaic-pair">
+                    <figure class="report-figure">
+                        <img src="./media/kitchen-mosaic.webp" alt="Kitchen panorama made from manual correspondences" width="2395" height="1590" loading="lazy">
+                        <figcaption>Part A &middot; manual correspondences</figcaption>
+                    </figure>
+                    <figure class="report-figure">
+                        <img src="./media/kitchen-auto-mosaic.webp" alt="Kitchen panorama made from automatic feature matching and RANSAC" width="2359" height="1604" loading="lazy">
+                        <figcaption>Part B &middot; automatic features + RANSAC</figcaption>
+                    </figure>
+                </div>
+            </article>
+        </section>
+
+
+        <section id="reflection" class="project-section">
+            <div class="project-section-header">
+                <span class="project-section-number">10</span>
                 <h2>What I<br>Learned</h2>
             </div>
 
@@ -397,6 +742,22 @@
                 <article class="insight">
                     <h3>Parallax is not a bad homography</h3>
                     <p>One projective transform cannot perfectly align a translated camera view containing many depths.</p>
+                </article>
+                <article class="insight">
+                    <h3>Strong is not enough</h3>
+                    <p>ANMS turns a pile of strong corners into a geometrically useful distribution across the image.</p>
+                </article>
+                <article class="insight">
+                    <h3>Context beats a pixel</h3>
+                    <p>Blurred 40×40 neighborhoods remain recognizable after small shifts that would break tiny raw patches.</p>
+                </article>
+                <article class="insight">
+                    <h3>Ambiguity is measurable</h3>
+                    <p>The nearest-neighbor ratio exposes when a descriptor has no clearly distinctive partner.</p>
+                </article>
+                <article class="insight">
+                    <h3>Consensus beats perfection</h3>
+                    <p>RANSAC succeeds without requiring every proposed match to be correct.</p>
                 </article>
             </div>
         </section>
